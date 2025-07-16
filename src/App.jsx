@@ -1,9 +1,9 @@
-import WelcomeScreen from './pages/WelcomeScreen';
+import { Outlet } from 'react-router-dom';
 import './App.css';
 
 function App() {
   return (
-    <WelcomeScreen />
+    <Outlet />
   );
 }
 

@@ -1,12 +1,19 @@
 import React from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const WelcomeScreen = () => {
+  const navigate = useNavigate();
+
+  const handleProviderRegister = () => {
+    navigate('/register-provider');
+  };
+
   return (
     <Container fluid className="d-flex align-items-center justify-content-center min-vh-100" style={{ background: 'var(--main-bg)' }}>
       <Row className="w-100 justify-content-center">
-        <Col md={8} lg={6} xl={5}>
+        <Col md={10} lg={8} xl={7}>
           <Card className="p-4 shadow-lg" style={{ borderRadius: '1rem' }}>
             <Card.Body className="text-center">
               <h2 className="mb-4 section-title">Bienvenido a Nuestra Plataforma</h2>
@@ -34,7 +41,7 @@ const WelcomeScreen = () => {
                       <p className="card-text">
                         Ofrece tus servicios y encuentra nuevos clientes.
                       </p>
-                      <Button variant="success" className="w-100 mt-3">
+                      <Button variant="success" className="w-100 mt-3" onClick={handleProviderRegister}>
                         Registrarse como Proveedor
                       </Button>
                     </Card.Body>
