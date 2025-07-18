@@ -34,10 +34,6 @@ const ProviderRegistrationForm = () => {
     typeProviders,
 
     handleSubmit,
-    step,
-    nextStep,
-    prevStep,
-    loading,
     errors,
     successMessage
   } = useProviderRegistrationForm();
@@ -102,6 +98,8 @@ const ProviderRegistrationForm = () => {
               <h2 className="mb-4 section-title text-center">Registro de Proveedor</h2>
               <StepsTabsNav steps={steps} currentStep={currentStep} setCurrentStep={setCurrentStep} />
               <Form onSubmit={handleSubmit}>
+                {successMessage && <div className="alert alert-success">{successMessage}</div>}
+                {errors && <div className="alert alert-danger">{errors.detail || JSON.stringify(errors)}</div>}
                 <div style={{ overflowX: 'hidden' }}>
                   <div
                     style={{

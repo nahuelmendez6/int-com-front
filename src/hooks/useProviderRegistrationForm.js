@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getProvinces, 
         getDepartmentsByProvince, 
-        getCitiesByDepartment } from '../services/locationServices';
+        getCitiesByDepartment,
+        createAddress } from '../services/locationServices';
 
 import { getCategories,
         getTypeProviders,
@@ -51,8 +52,8 @@ const useProviderRegistrationForm = () => {
   
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [error, setErrors] = useState(null);
-  const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
 
   // Formulario principal
@@ -64,7 +65,7 @@ const useProviderRegistrationForm = () => {
     password: '',
     confirmPassword: '',
     description: '',
-    typeProvider: '',
+    type_provider: '',
     profession: '',
     address: {
       street: '',
@@ -125,9 +126,13 @@ const useProviderRegistrationForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    console.log('handleChange called:', { name, value });
     const [section, field] = name.split('.');
 
-    if (field) {
+    if (name === 'categories') {
+      setFormData(prev => ({ ...prev, categories: value }));
+      console.log('Updated formData.categories:', value);
+    } else if (field) {
       setFormData(prev => ({
         ...prev,
         [section]: {
@@ -140,19 +145,55 @@ const useProviderRegistrationForm = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    setLoading(true);
-    setErrors(null);
-    setSuccessMessage(null);
-    try {
-      const data = await registerUser(formData);
-      setSuccessMessage(data.message || 'Registro exitoso');
-    } catch (err) {
-      setErrors(err);
-    } finally {
-      setLoading(false);
+  const handleSubmit = async (e) => {
+  e.preventDefault(); // ✅ ahora `e` está definido
+  setLoading(true);
+  setErrors(null);
+  setSuccessMessage(null);
+
+  try {
+    console.log('Attempting to create address with data:', formData.address);
+    const addressResponse = await createAddress(formData.address);
+    const addressId = addressResponse.id;
+
+    const registrationData = {
+      ...formData,
+      role: 'provider',
+      address: addressId,
+      categories: formData.categories.map((id) => parseInt(id, 10)),
+    };
+
+    // Eliminar campos opcionales si están vacíos para no enviar null, string vacío o 0
+    if (formData.type_provider && formData.type_provider !== '' && formData.type_provider !== null && formData.type_provider !== undefined) {
+      registrationData.type_provider = Number(formData.type_provider);
+    } else {
+      delete registrationData.type_provider;
     }
-  };
+    if (formData.profession && formData.profession !== '' && formData.profession !== null && formData.profession !== undefined) {
+      registrationData.profession = Number(formData.profession);
+    } else {
+      delete registrationData.profession;
+    }
+
+    // Eliminar datos que no son del backend
+    delete registrationData.confirmPassword;
+    delete registrationData.serviceArea;
+
+    // Agregar las ciudades seleccionadas como parte del registro
+    if (formData.serviceArea && Array.isArray(formData.serviceArea.cities) && formData.serviceArea.cities.length > 0) {
+      registrationData.cities = formData.serviceArea.cities.map(id => Number(id));
+    }
+
+    const data = await registerUser(registrationData);
+    setSuccessMessage(data.message || 'Registro exitoso');
+  } catch (err) {
+    console.error('Error during registration:', err);
+    setErrors(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
   // Avanzar y retroceder pasos
@@ -231,6 +272,7 @@ const useProviderRegistrationForm = () => {
   const handleDepartmentCheckbox = async (e) => {
     const deptId = e.target.value;
     const isChecked = e.target.checked;
+    console.log('handleDepartmentCheckbox called:', { deptId, isChecked });
 
     const updatedDepartments = isChecked
       ? [...formData.serviceArea.departments, deptId]
@@ -243,6 +285,7 @@ const useProviderRegistrationForm = () => {
         const citiesOfDept = await getCitiesByDepartment(deptId);
         const cityIds = citiesOfDept.map(c => c.id_city.toString());
         updatedCities = updatedCities.filter(id => !cityIds.includes(id));
+        console.log('Cities filtered after unchecking department:', updatedCities);
       } catch (err) {
         console.error('Error filtrando ciudades:', err);
       }
@@ -256,6 +299,7 @@ const useProviderRegistrationForm = () => {
         cities: updatedCities
       }
     }));
+    console.log('Updated formData.serviceArea.departments:', updatedDepartments);
 
     if (updatedDepartments.length > 0) {
       try {
@@ -268,11 +312,13 @@ const useProviderRegistrationForm = () => {
         );
 
         setServicesCities(uniqueCities);
+        console.log('Updated servicesCities:', uniqueCities);
       } catch (err) {
         console.error('Error cargando ciudades:', err);
       }
     } else {
       setServicesCities([]);
+      console.log('servicesCities cleared.');
     }
   };
 
@@ -314,6 +360,9 @@ const useProviderRegistrationForm = () => {
     handleProvinceForServices,
     handleDepartmentCheckbox,
     handleCityCheckbox,
+    handleSubmit,
+    errors,
+    successMessage,
   };
 };
 

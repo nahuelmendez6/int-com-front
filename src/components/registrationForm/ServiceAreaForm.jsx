@@ -9,7 +9,9 @@ const ServiceAreaForm = ({
   handleProvinceChange,
   handleDepartmentCheckbox,
   handleCityCheckbox,
-}) => (
+}) => {
+  console.log('ServiceAreaForm received cities:', cities);
+  return (
   <>
     <Form.Select name="serviceArea.province" value={formData.serviceArea.province} onChange={handleProvinceChange}>
       <option value="">Seleccione una provincia</option>
@@ -51,5 +53,6 @@ const ServiceAreaForm = ({
     )}
   </>
 );
+};
 
 export default ServiceAreaForm;

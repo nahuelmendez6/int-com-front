@@ -7,7 +7,9 @@ const ProviderInfoForm = ({
   categories = [],
   typeProviders = [],
   professions = [],
-}) => (
+}) => {
+  console.log('ProviderInfoForm received categories:', categories);
+  return (
   <>
     <Form.Group className="mb-3">
       <Form.Label>Descripción</Form.Label>
@@ -23,13 +25,20 @@ const ProviderInfoForm = ({
     <Form.Group className="mb-3">
       <Form.Label>Tipo de Proveedor</Form.Label>
       <Form.Select
-        name="typeProvider"
-        value={formData.typeProvider}
-        onChange={handleChange}
+        name="type_provider"
+        value={formData.type_provider}
+        onChange={(e) =>
+          handleChange({
+            target: {
+              name: 'type_provider',
+              value: e.target.value,
+            },
+          })
+        }
       >
         <option value="">Seleccioná un tipo</option>
         {typeProviders.map((type) => (
-          <option key={type.id} value={type.id}>
+          <option key={type.id_type_provider} value={type.id_type_provider}>
             {type.name}
           </option>
         ))}
@@ -41,11 +50,18 @@ const ProviderInfoForm = ({
       <Form.Select
         name="profession"
         value={formData.profession}
-        onChange={handleChange}
+        onChange={(e) =>
+          handleChange({
+            target: {
+              name: 'profession',
+              value: e.target.value,
+            },
+          })
+        }
       >
         <option value="">Seleccioná una profesión</option>
         {professions.map((prof) => (
-          <option key={prof.id} value={prof.id}>
+          <option key={prof.id_profession} value={prof.id_profession}>
             {prof.name}
           </option>
         ))}
@@ -57,18 +73,22 @@ const ProviderInfoForm = ({
   <div>
     {categories.map((cat) => (
       <Form.Check
-        key={cat.id}
+        key={cat.id_category}
         type="checkbox"
         label={cat.name}
-        value={cat.id}
-        checked={formData.categories.includes(String(cat.id))}
+        value={cat.id_category}
+        checked={formData.categories.includes(String(cat.id_category))}
         onChange={(e) => {
-          const value = e.target.value;
+          console.log('Current formData.categories before change:', formData.categories);
+          const categoryId = String(cat.id_category);
           const isChecked = e.target.checked;
+          console.log('Category checkbox changed:', { categoryId, isChecked });
           const newCategories = isChecked
-            ? [...formData.categories, value]
-            : formData.categories.filter((id) => id !== value);
+            ? [...formData.categories, categoryId]
+            : formData.categories.filter((id) => id !== categoryId);
+          console.log('New categories array (before calling handleChange):', newCategories);
           handleChange({ target: { name: 'categories', value: newCategories } });
+          console.log('formData.categories after handleChange (may not be immediate):', formData.categories);
         }}
       />
     ))}
@@ -77,5 +97,6 @@ const ProviderInfoForm = ({
 
   </>
 );
+};
 
 export default ProviderInfoForm;

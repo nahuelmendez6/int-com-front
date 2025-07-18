@@ -1,18 +1,52 @@
 import axios from 'axios';
 
-const API_URL_BASE = 'http://127.0.0.1:8000/locations/';
+const API_URL = 'http://127.0.0.1:8000/locations';
 
 export const getProvinces = async () => {
-    const response = await axios.get(`${API_URL_BASE}provinces/`);
-    return response.data;    
-}
+    try {
+        const response = await axios.get(`${API_URL}/provinces/`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching provinces:', error);
+        throw error;
+    }
+};
 
 export const getDepartmentsByProvince = async (provinceId) => {
-    const response = await axios.get(`${API_URL_BASE}departments/by-province/${provinceId}/`);
-    return response.data;
-}
+    try {
+        const response = await axios.get(`${API_URL}/departments/?province_id=${provinceId}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching departments for province ${provinceId}:`, error);
+        throw error;
+    }
+};
 
 export const getCitiesByDepartment = async (departmentId) => {
-    const response = await axios.get(`${API_URL_BASE}cities/by-department/${departmentId}/`);
-    return response.data;
-}
+    try {
+        const response = await axios.get(`${API_URL}/cities/by-department/${departmentId}/`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching cities for department ${departmentId}:`, error);
+        throw error;
+    }
+};
+
+export const createAddress = async (addressData) => {
+    try {
+        const payload = {
+            street: addressData.street,
+            number: addressData.number,
+            floor: addressData.floor,
+            apartment: addressData.apartment,
+            postal_code: addressData.postal_code,
+            city: addressData.city,
+        };
+        console.log('Payload for createAddress:', payload);
+        const response = await axios.post(`${API_URL}/addresses/`, payload);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating address:', error);
+        throw error.response?.data || { detail: 'Error al crear la dirección' };
+    }
+};
