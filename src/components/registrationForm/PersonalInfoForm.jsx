@@ -1,27 +1,73 @@
 import React from 'react';
-import { Form } from 'react-bootstrap';
+import { Form, Row, Col } from 'react-bootstrap';
 
 const PersonalInfoForm = ({ formData, handleChange }) => (
   <>
-    <Form.Group className="mb-3">
-      <Form.Label>Nombre *</Form.Label>
-      <Form.Control type="text" name="name" value={formData.name} onChange={handleChange} required />
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Email</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          required
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </Col>
     </Form.Group>
-    <Form.Group className="mb-3">
-      <Form.Label>Apellido *</Form.Label>
-      <Form.Control type="text" name="lastname" value={formData.lastname} onChange={handleChange} required />
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Nombre</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          required
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </Col>
     </Form.Group>
-    <Form.Group className="mb-3">
-      <Form.Label>Email *</Form.Label>
-      <Form.Control type="email" name="email" value={formData.email} onChange={handleChange} required />
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Apellido</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          required
+          type="text"
+          name="lastname"
+          value={formData.lastname}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </Col>
     </Form.Group>
-    <Form.Group className="mb-3">
-      <Form.Label>Contraseña *</Form.Label>
-      <Form.Control type="password" name="password" value={formData.password} onChange={handleChange} required />
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Contraseña</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          required
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          className="form-control"
+          placeholder="6 o más caracteres"
+        />
+      </Col>
     </Form.Group>
-    <Form.Group className="mb-3">
-      <Form.Label>Confirmar Contraseña *</Form.Label>
-      <Form.Control type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} required />
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Confirmar</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          required
+          type="password"
+          name="confirmPassword"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </Col>
     </Form.Group>
   </>
 );

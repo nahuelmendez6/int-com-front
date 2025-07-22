@@ -1,0 +1,75 @@
+
+.welcome-screen {
+  background-color: #f3f2ef;
+}
+
+.welcome-container {
+  max-width: 1128px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.hero-section {
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  flex: 1;
+  padding-right: 0;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 200;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.hero-image {
+  flex: 1;
+}
+
+.hero-image img {
+  width: 100%;
+  height: auto;
+}
+
+.login-form {
+  margin-top: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.btn-google {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+}
+
+.btn-google:hover {
+  background-color: #357ae8;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ccc;
+}
+
+.divider:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.divider:not(:empty)::after {
+  margin-left: .25em;
+}

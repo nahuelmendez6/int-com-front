@@ -1,11 +1,11 @@
 import React from 'react';
 import { Form, Button, Alert } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import useProviderRegistrationForm from '../hooks/useProviderRegistrationForm';
+import useCustomerRegistrationForm from '../hooks/useCustomerRegistrationForm';
 import PersonalInfoForm from '../components/registrationForm/PersonalInfoForm';
 import './RegistrationForm.css';
 
-const ProviderRegistrationForm = () => {
+const CustomerRegistrationForm = () => {
   const {
     formData,
     handleChange,
@@ -13,7 +13,7 @@ const ProviderRegistrationForm = () => {
     loading,
     errors,
     successMessage,
-  } = useProviderRegistrationForm();
+  } = useCustomerRegistrationForm();
   const navigate = useNavigate();
 
   return (
@@ -45,4 +45,4 @@ const ProviderRegistrationForm = () => {
   );
 };
 
-export default ProviderRegistrationForm;
+export default CustomerRegistrationForm;

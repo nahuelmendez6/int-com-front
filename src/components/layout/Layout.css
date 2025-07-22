@@ -1,0 +1,121 @@
+body {
+  background-color: #f3f2ef;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.linkedin-navbar {
+  background-color: #fff !important;
+  border-bottom: 1px solid #ccc;
+  padding: 0.5rem 1rem;
+}
+
+.linkedin-navbar .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.linkedin-navbar .search-bar-container {
+  flex-grow: 1;
+  max-width: 280px;
+  margin-left: 1rem;
+}
+
+.linkedin-navbar .search-input {
+  border-radius: 4px;
+  background-color: #eef3f8;
+  border: none;
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+
+.linkedin-navbar .nav-icon-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.linkedin-navbar .nav-icon-link:hover {
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.linkedin-navbar .nav-icon-link i {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.linkedin-navbar .nav-icon-link img {
+  margin-bottom: 0.25rem;
+}
+
+.main-content-wrapper {
+  padding-top: 56px; /* Altura del navbar */
+  flex-grow: 1;
+}
+
+.left-sidebar-container {
+  background-color: #f3f2ef;
+  padding-top: 20px;
+  position: fixed;
+  top: 56px; /* Altura del navbar */
+  bottom: 0;
+  left: 0;
+  width: 220px;
+  overflow-y: auto;
+  border-right: 1px solid #ccc;
+}
+
+.sidebar-linkedin {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+}
+
+.profile-section img {
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+}
+
+.central-content-container {
+  max-width: 1128px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1rem;
+}
+
+.right-sidebar-container {
+  background-color: #f3f2ef;
+  padding-top: 20px;
+  position: fixed;
+  top: 56px; /* Altura del navbar */
+  bottom: 0;
+  right: 0;
+  width: 280px;
+  overflow-y: auto;
+  border-left: 1px solid #ccc;
+}
+
+.right-sidebar-linkedin {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.15), 0 2px 3px rgba(0,0,0,.2);
+}
+
+.fixed-top-offset {
+  padding-top: 56px; /* Altura del navbar */
+}

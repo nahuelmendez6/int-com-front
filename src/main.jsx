@@ -5,6 +5,11 @@ import './index.css';
 import App from './App.jsx';
 import WelcomeScreen from './pages/WelcomeScreen';
 import ProviderRegistrationForm from './pages/ProviderRegistrationForm';
+import CustomerRegistrationForm from './pages/CustomerRegistrationForm';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import Dashboard from './pages/Dashboard';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -19,12 +24,58 @@ const router = createBrowserRouter([
         path: "/register-provider",
         element: <ProviderRegistrationForm />,
       },
+      {
+        path: "/register-customer",
+        element: <CustomerRegistrationForm />,
+      },
+      {
+        path: "/verify-email",
+        element: <EmailVerificationPage />,
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['customer', 'provider', 'admin']} />,
+        children: [
+          {
+            path: "/dashboard",
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['customer']} />,
+        children: [
+          {
+            path: "/dashboard-customer",
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['provider']} />,
+        children: [
+          {
+            path: "/dashboard-provider",
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['admin']} />,
+        children: [
+          {
+            path: "/dashboard-admin",
+            element: <Dashboard />,
+          },
+        ],
+      },
     ],
   },
 ]);
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 );
