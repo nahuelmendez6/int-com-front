@@ -1,7 +1,14 @@
 import React from 'react';
 import { Card, Image, ListGroup } from 'react-bootstrap';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const Sidebar = () => {
+
+  const { role } = useAuth();
+  const { naveigate } = useNavigate();
+
   return (
     <div
       style={{
@@ -30,10 +37,18 @@ const Sidebar = () => {
 
       <ListGroup variant="flush">
         <ListGroup.Item action href="#">Mi perfil</ListGroup.Item>
-        <ListGroup.Item action href="#">Conexiones</ListGroup.Item>
-        <ListGroup.Item action href="#">Grupos</ListGroup.Item>
-        <ListGroup.Item action href="#">Eventos</ListGroup.Item>
-        <ListGroup.Item action href="#">Hashtags seguidos</ListGroup.Item>
+        { role == 'provider' && (
+          <>
+            <ListGroup.Item action href="#">Portfolio</ListGroup.Item>
+            <ListGroup.Item action href="#">Gestión de dirección</ListGroup.Item>
+          </>  
+        )}
+
+        
+        {/* <ListGroup.Item action href="#">Conexiones</ListGroup.Item> */}
+        {/* <ListGroup.Item action href="#">Grupos</ListGroup.Item> */}
+        {/* <ListGroup.Item action href="#">Eventos</ListGroup.Item> */}
+        {/* <ListGroup.Item action href="#">Hashtags seguidos</ListGroup.Item> */}
       </ListGroup>
     </div>
   );

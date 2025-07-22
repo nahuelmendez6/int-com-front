@@ -8,6 +8,8 @@ import ProviderRegistrationForm from './pages/ProviderRegistrationForm';
 import CustomerRegistrationForm from './pages/CustomerRegistrationForm';
 import EmailVerificationPage from './pages/EmailVerificationPage';
 import Dashboard from './pages/Dashboard';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -31,8 +33,40 @@ const router = createBrowserRouter([
         element: <EmailVerificationPage />,
       },
       {
-        path: "/dashboard",
-        element: <Dashboard />,
+        element: <ProtectedRoute allowedRoles={['customer', 'provider', 'admin']} />,
+        children: [
+          {
+            path: "/dashboard",
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['customer']} />,
+        children: [
+          {
+            path: "/dashboard-customer",
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['provider']} />,
+        children: [
+          {
+            path: "/dashboard-provider",
+            element: <Dashboard />,
+          },
+        ],
+      },
+      {
+        element: <ProtectedRoute allowedRoles={['admin']} />,
+        children: [
+          {
+            path: "/dashboard-admin",
+            element: <Dashboard />,
+          },
+        ],
       },
     ],
   },
@@ -40,6 +74,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 );
