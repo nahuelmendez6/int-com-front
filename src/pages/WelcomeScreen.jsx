@@ -28,7 +28,7 @@ const WelcomeScreen = () => {
                       <p className="card-text">
                         Busca y contrata servicios de profesionales y empresas.
                       </p>
-                      <Button variant="primary" className="w-100 mt-3">
+                      <Button variant="primary" className="w-100 mt-3" onClick={() => navigate('/register-customer')}>
                         Registrarse como Cliente
                       </Button>
                     </Card.Body>
