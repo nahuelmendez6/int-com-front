@@ -3,70 +3,72 @@ import { Form, Row, Col } from 'react-bootstrap';
 
 const PersonalInfoForm = ({ formData, handleChange }) => (
   <>
-    <Row className="mb-3">
-      <Form.Group as={Col} md="6">
-        <Form.Label>Nombre *</Form.Label>
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Email</Form.Label>
+      <Col sm={8}>
+        <Form.Control
+          required
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className="form-control"
+        />
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Nombre</Form.Label>
+      <Col sm={8}>
         <Form.Control
           required
           type="text"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          size="sm"
-          className="rounded-pill"
+          className="form-control"
         />
-      </Form.Group>
-      <Form.Group as={Col} md="6">
-        <Form.Label>Apellido *</Form.Label>
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Apellido</Form.Label>
+      <Col sm={8}>
         <Form.Control
           required
           type="text"
           name="lastname"
           value={formData.lastname}
           onChange={handleChange}
-          size="sm"
-          className="rounded-pill"
+          className="form-control"
         />
-      </Form.Group>
-    </Row>
-    <Form.Group className="mb-3">
-      <Form.Label>Email *</Form.Label>
-      <Form.Control
-        required
-        type="email"
-        name="email"
-        value={formData.email}
-        onChange={handleChange}
-        size="sm"
-        className="rounded-pill"
-      />
+      </Col>
     </Form.Group>
-    <Row className="mb-3">
-      <Form.Group as={Col} md="6">
-        <Form.Label>Contraseña *</Form.Label>
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Contraseña</Form.Label>
+      <Col sm={8}>
         <Form.Control
           required
           type="password"
           name="password"
           value={formData.password}
           onChange={handleChange}
-          size="sm"
-          className="rounded-pill"
+          className="form-control"
+          placeholder="6 o más caracteres"
         />
-      </Form.Group>
-      <Form.Group as={Col} md="6">
-        <Form.Label>Confirmar Contraseña *</Form.Label>
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} className="mb-3">
+      <Form.Label column sm={4} className="form-label text-sm-end">Confirmar</Form.Label>
+      <Col sm={8}>
         <Form.Control
           required
           type="password"
           name="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleChange}
-          size="sm"
-          className="rounded-pill"
+          className="form-control"
         />
-      </Form.Group>
-    </Row>
+      </Col>
+    </Form.Group>
   </>
 );
 

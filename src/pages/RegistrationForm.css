@@ -1,0 +1,81 @@
+.registration-page {
+  background-color: #f3f2ef;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.registration-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.registration-header .logo {
+  color: #0a66c2;
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.registration-header .subtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.9);
+  margin-top: 0.5rem;
+}
+
+.registration-card {
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.form-label {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.75);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.form-control {
+  border-radius: 0.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.6);
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+.form-control:focus {
+  border-color: #0a66c2;
+  box-shadow: 0 0 0 1px #0a66c2;
+}
+
+.btn-submit {
+  background-color: #0a66c2;
+  border: none;
+  border-radius: 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem;
+  width: 100%;
+}
+
+.btn-submit:hover {
+  background-color: #004182;
+}
+
+.terms-text {
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.6);
+  text-align: center;
+  margin: 1rem 0;
+}
+
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+}

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Container, Row, Col, Card, Form } from 'react-bootstrap';
+import { Form, Button, Alert } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import useProviderRegistrationForm from '../hooks/useProviderRegistrationForm';
-
 import PersonalInfoForm from '../components/registrationForm/PersonalInfoForm';
+import './RegistrationForm.css';
 
 const ProviderRegistrationForm = () => {
   const {
@@ -13,31 +14,34 @@ const ProviderRegistrationForm = () => {
     errors,
     successMessage,
   } = useProviderRegistrationForm();
-
-  
+  const navigate = useNavigate();
 
   return (
-    <Container fluid className="d-flex align-items-center justify-content-center min-vh-100" style={{ background: 'var(--main-bg)' }}>
-      <Row className="w-100 justify-content-center">
-        <Col md={10} lg={9} xl={8}>
-          <Card className="p-4 shadow-lg" style={{ borderRadius: '1rem' }}>
-            <Card.Body>
-              <h2 className="mb-4 section-title text-center">Registro de Usuario</h2>
-              <Form onSubmit={handleSubmit}>
-                <PersonalInfoForm formData={formData} handleChange={handleChange} />
-                <div className="d-flex justify-content-center mt-4">
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Registrando...' : 'Registrarse'}
-                  </button>
-                </div>
-                {errors && <p className="text-danger mt-3 text-center">{errors}</p>}
-                {successMessage && <p className="text-success mt-3 text-center">{successMessage}</p>}
-              </Form>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+    <div className="registration-page">
+      <header className="registration-header">
+        <a href="/" className="logo">Integracion Comunitaria</a>
+        <h1 className="subtitle">Saca el máximo partido a tu vida profesional</h1>
+      </header>
+      <div className="registration-card">
+        <Form onSubmit={handleSubmit} noValidate>
+          <PersonalInfoForm formData={formData} handleChange={handleChange} />
+          
+          {errors && <Alert variant="danger" className="mt-3">{errors}</Alert>}
+          {successMessage && <Alert variant="success" className="mt-3">{successMessage}</Alert>}
+
+          <p className="terms-text">
+            Al hacer clic en Aceptar y continuar, aceptas las Condiciones de uso, la Política de privacidad y la Política de cookies de Integracion Comunitaria.
+          </p>
+
+          <Button type="submit" className="btn-submit" disabled={loading}>
+            {loading ? 'Registrando...' : 'Aceptar y continuar'}
+          </Button>
+        </Form>
+        <div className="login-link">
+          ¿Ya tienes una cuenta? <a href="/login">Inicia sesión</a>
+        </div>
+      </div>
+    </div>
   );
 };
 
