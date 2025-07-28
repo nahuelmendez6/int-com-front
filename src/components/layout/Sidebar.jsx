@@ -1,13 +1,12 @@
 import React from 'react';
 import { Card, Image, ListGroup } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 
 const Sidebar = () => {
 
   const { role } = useAuth();
-  const { naveigate } = useNavigate();
 
   return (
     <div
@@ -36,11 +35,11 @@ const Sidebar = () => {
       </Card>
 
       <ListGroup variant="flush">
-        <ListGroup.Item action href="#">Mi perfil</ListGroup.Item>
+        <ListGroup.Item as={NavLink} to="/profile">Mi perfil</ListGroup.Item>
         { role == 'provider' && (
           <>
-            <ListGroup.Item action href="#">Portfolio</ListGroup.Item>
-            <ListGroup.Item action href="#">Gestión de dirección</ListGroup.Item>
+            <ListGroup.Item as={NavLink} to="/portfolio">Portfolio</ListGroup.Item>
+            <ListGroup.Item as={NavLink} to="/address-management">Gestión de dirección</ListGroup.Item>
           </>  
         )}
 
