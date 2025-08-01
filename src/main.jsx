@@ -10,6 +10,7 @@ import EmailVerificationPage from './pages/EmailVerificationPage';
 import Dashboard from './pages/Dashboard';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProviderProfilePage from './pages/ProviderProfilePage';
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
           {
             path: "/dashboard-provider",
             element: <Dashboard />,
+          },
+          {
+            path: "/profile",
+            element: <ProviderProfilePage />,
           },
         ],
       },

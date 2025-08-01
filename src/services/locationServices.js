@@ -50,3 +50,13 @@ export const createAddress = async (addressData) => {
         throw error.response?.data || { detail: 'Error al crear la dirección' };
     }
 };
+
+export const getCities = async () => {
+    try {
+        const response = await axios.get(`${API_URL}/cities/`);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching cities:', error);
+        throw error;
+    }
+};

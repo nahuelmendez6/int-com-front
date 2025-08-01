@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
+import Layout from './layout/Layout';
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { token, role, isLoading } = useAuth();
@@ -20,7 +21,11 @@ const ProtectedRoute = ({ allowedRoles }) => {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <Outlet />;
+  return (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
 };
 
 export default ProtectedRoute;

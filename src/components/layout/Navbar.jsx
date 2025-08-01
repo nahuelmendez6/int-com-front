@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Navbar,
   Nav,
@@ -7,14 +7,35 @@ import {
   FormControl,
   NavDropdown,
   Image,
+  Badge,
 } from 'react-bootstrap';
 import { FiMessageSquare, FiBell } from 'react-icons/fi'; 
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { checkProfileStatus } from '../../services/profileService';
 
 const CustomNavbar = () => {
-  const { logout, role } = useAuth(); // Get role from useAuth
+  const { logout, role, token } = useAuth(); // Get role and token from useAuth
   const navigate = useNavigate();
+  const [profileIncomplete, setProfileIncomplete] = useState(false);
+
+  useEffect(() => {
+    const fetchProfileStatus = async () => {
+      console.log("Checking profile status. Role:", role, "Token available:", !!token);
+      if (role === 'provider' && token) {
+        try {
+          const data = await checkProfileStatus(token);
+          console.log("API response:", data);
+          setProfileIncomplete(!data.profile_complete);
+          console.log("Profile incomplete state set to:", !data.profile_complete);
+        } catch (error) {
+          console.error('Error checking profile status:', error);
+        }
+      }
+    };
+
+    fetchProfileStatus();
+  }, [role, token]);
 
   const handleLogout = () => {
     logout();
@@ -58,7 +79,7 @@ const CustomNavbar = () => {
                 <Nav.Link href="#" className="text-dark">Mis Servicios</Nav.Link>
                 
                 <Nav.Link href="#" className="text-dark">Buscar Proveedores</Nav.Link>
-              </>
+              </> 
             )}
             {role === 'provider' && (
               <>
@@ -77,9 +98,28 @@ const CustomNavbar = () => {
             <Nav.Link href="#" className="text-dark d-flex align-items-center gap-2">
               <FiMessageSquare />
             </Nav.Link>
-            <Nav.Link href="#" className="text-dark d-flex align-items-center gap-2">
-              <FiBell />
-            </Nav.Link>
+
+            <NavDropdown
+              title={
+                <span className="position-relative">
+                  <FiBell />
+                  {profileIncomplete && <Badge pill bg="danger" className="notification-badge">&nbsp;</Badge>}
+                </span>
+              }
+              id="notification-dropdown"
+              align="end"
+              className="text-dark d-flex align-items-center gap-2"
+            >
+              {profileIncomplete ? (
+                <NavDropdown.Item href="/profile" style={{ color: 'black' }} className='notification-item'>
+                  Tu perfil está incompleto. ¡Complétalo ahora para comenzar a conectarte con tu red!
+                </NavDropdown.Item>
+              ) : (
+                <NavDropdown.Item disabled style={{ color: 'black', backgroundColor: '#f8f9fa' }}>
+                  No tienes notificaciones nuevas.
+                </NavDropdown.Item>
+              )}
+            </NavDropdown>
 
             <NavDropdown
               title={
@@ -97,7 +137,7 @@ const CustomNavbar = () => {
               id="profile-dropdown"
               align="end"
             >
-              <NavDropdown.Item href="#">Ver perfil</NavDropdown.Item>
+              <NavDropdown.Item href="/profile">Ver perfil</NavDropdown.Item>
               <NavDropdown.Item href="#">Configuración</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}>Cerrar sesión</NavDropdown.Item>
