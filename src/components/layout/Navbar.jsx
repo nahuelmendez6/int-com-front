@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import { checkProfileStatus } from '../../services/profileService';
 
 const CustomNavbar = () => {
-  const { logout, role, token } = useAuth(); // Get role and token from useAuth
+  const { logout, role, token, isLoading } = useAuth(); // Get role and token from useAuth
   const navigate = useNavigate();
   const [profileIncomplete, setProfileIncomplete] = useState(false);
 
@@ -34,8 +34,10 @@ const CustomNavbar = () => {
       }
     };
 
-    fetchProfileStatus();
-  }, [role, token]);
+    if (!isLoading) {
+      fetchProfileStatus();
+    }
+  }, [role, token, isLoading]);
 
   const handleLogout = () => {
     logout();

@@ -15,13 +15,18 @@ export const registerUser = async (formData) => {
 
 export const login = async (credentials) => {
     try {
-        const response = await axios.post(`${API_URL}/login/`, credentials);
+        const response = await axios.post(`${API_URL}/login/`, credentials, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         return response.data;
     } catch (error) {
         console.error('Error axios:', error.response);
         throw error.response?.data || { detail: 'Error al iniciar sesión' };
     }
 };
+
 
 export const verifyCode = async (code) => {
     try {

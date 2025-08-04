@@ -50,8 +50,8 @@ export const AuthProvider = ({ children }) => {
 
       return data; // Return data for redirection logic in components
     } catch (error) {
-      console.error('Error axios: ', error.response);
-    throw error.response.data;
+      console.error('Login error in AuthContext:', error);
+      throw error;
     }
   };
 

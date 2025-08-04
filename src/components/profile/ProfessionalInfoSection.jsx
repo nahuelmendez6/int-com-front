@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button } from 'react-bootstrap';
-import { getProfessions, getCategories, getTypeProviders } from '../../services/profileService';
+import { Button, Modal } from 'react-bootstrap';
+import { getProfessions, getCategories, getTypeProviders, getProviderProfileData, updateProvider } from '../../services/profileService';
+import { useAuth } from '../../context/AuthContext';
+import ProviderInfoForm from '../registrationForm/ProviderInfoForm';
 
 const ProfessionalInfoSection = ({ provider, onUpdate }) => {
-  const [formData, setFormData] = useState({});
+  const { token, isLoading } = useAuth();
+  const [formData, setFormData] = useState({
+    profession: '',
+    type_provider: '',
+    categories: [],
+    description: ''
+  });
   const [professions, setProfessions] = useState([]);
   const [categories, setCategories] = useState([]);
   const [typeProviders, setTypeProviders] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleClose = () => setShowModal(false);
+  const handleShow = () => setShowModal(true);
 
   useEffect(() => {
     const fetchOptions = async () => {
@@ -22,65 +34,75 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
       }
     };
 
-    fetchOptions();
-  }, []);
+    const fetchProviderData = async () => {
+      try {
+        const providerData = await getProviderProfileData(token);
+        setFormData({
+          profession: providerData.profession?.id_profession || '',
+          type_provider: providerData.type_provider?.id_type_provider || '',
+          categories: providerData.categories?.map(c => c.id_category) || [],
+          description: providerData.description || ''
+        });
+      } catch (error) {
+        console.error('Error fetching provider data:', error);
+      }
+    };
 
-  useEffect(() => {
-    if (provider) {
-      setFormData({
-        profession: provider.profession?.id || '',
-        type_provider: provider.type_provider?.id || '',
-        categories: provider.categories?.map(c => c.id) || [],
-      });
+    fetchOptions();
+    if (token && !isLoading) {
+      fetchProviderData();
     }
-  }, [provider]);
+  }, [token, isLoading]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCategoryChange = (e) => {
-    const selectedCategories = Array.from(e.target.selectedOptions, option => parseInt(option.value));
-    setFormData({ ...formData, categories: selectedCategories });
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onUpdate(formData);
+    try {
+      await updateProvider(token, formData);
+      onUpdate();
+      handleClose();
+    } catch (error) {
+      console.error('Error updating provider data:', error);
+    }
   };
 
   return (
     <div className="profile-section">
-      <h3>Información Profesional</h3>
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
-          <Form.Label>Profesión</Form.Label>
-          <Form.Select name="profession" value={formData.profession || ''} onChange={handleChange}>
-            <option value="">Seleccione una profesión</option>
-            {professions.map(p => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Tipo de Proveedor</Form.Label>
-          <Form.Select name="type_provider" value={formData.type_provider || ''} onChange={handleChange}>
-            <option value="">Seleccione un tipo</option>
-            {typeProviders.map(t => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Categorías</Form.Label>
-          <Form.Select multiple name="categories" value={formData.categories || []} onChange={handleCategoryChange}>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-        <Button variant="primary" type="submit">Actualizar Información</Button>
-      </Form>
+      {/* <h3>Información Profesional</h3> */}
+      <div>
+        <p><strong>Profesión:</strong> {provider?.profession?.name}</p>
+        <p><strong>Tipo de Proveedor:</strong> {provider?.type_provider?.name}</p>
+        <p><strong>Categorías:</strong> {provider?.categories?.map(c => c.name).join(', ')}</p>
+        <p><strong>Descripción:</strong> {provider?.description}</p>
+      </div>
+      <Button variant="primary" onClick={handleShow}>Editar</Button>
+
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Editar Información Profesional</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ProviderInfoForm
+            formData={formData}
+            handleChange={handleChange}
+            categories={categories}
+            typeProviders={typeProviders}
+            professions={professions}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Cerrar
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>
+            Guardar Cambios
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
