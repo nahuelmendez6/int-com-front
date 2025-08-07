@@ -22,63 +22,55 @@ const AddressSection = ({ provider, onUpdate }) => {
       province: ''
     }
   });
-  // const [formData, setFormData] = useState({
-  //   id_address: null,
-  //   street: '',
-  //   number: '',
-  //   floor: '',
-  //   apartment: '',
-  //   postal_code: '',
-  //   city: '',
-  //   department: '',
-  //   province: ''
-  // });
 
-
-  // useEffect(() => {
-  //   if (provider?.address) {
-  //     console.log("Populating form with address:", provider.address);
-  //     setFormData({
-  //       address: {
-  //         id_address: provider.address.id_address || null,
-  //         street: provider.address.street || '',
-  //         number: provider.address.number || '',
-  //         floor: provider.address.floor || '',
-  //         apartment: provider.address.apartment || '',
-  //         postal_code: provider.address.postal_code || '',
-  //         city: provider.address.city?.id_city || '',
-  //         department: provider.address.city?.department?.id_department || '',
-  //         province: provider.address.city?.department?.province?.id_province || ''
-  //       }
-  //     });
-  //   }
-  // }, [provider]);
-  
-  
   useEffect(() => {
     if (provider?.address) {
       setFormData({
-        id_address: provider.address.id_address || null,
-        street: provider.address.street || '',
-        number: provider.address.number || '',
-        floor: provider.address.floor || '',
-        apartment: provider.address.apartment || '',
-        postal_code: provider.address.postal_code || '',
-        city: provider.address.city?.id_city || '',
-        department: provider.address.city?.department?.id_department || '',
-        province: provider.address.city?.department?.province?.id_province || ''
+        address: {
+          id_address: provider.address.id_address || null,
+          street: provider.address.street || '',
+          number: provider.address.number || '',
+          floor: provider.address.floor || '',
+          apartment: provider.address.apartment || '',
+          postal_code: provider.address.postal_code || '',
+          city: provider.address.city?.id_city || '',
+          department: provider.address.city?.department?.id_department || '',
+          province: provider.address.city?.department?.province?.id_province || ''
+        }
       });
     }
   }, [provider]);
 
-  
   const [provinces, setProvinces] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [cities, setCities] = useState([]);
   const [showModal, setShowModal] = useState(false);
 
   const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
+  const handleShow = async () => {
+    if (provider?.address) {
+      const provinceId = provider.address.city?.department?.province?.id_province;
+      const departmentId = provider.address.city?.department?.id_department;
+
+      if (provinceId) {
+        try {
+          const departmentsData = await getDepartmentsByProvince(provinceId);
+          setDepartments(departmentsData);
+        } catch (error) {
+          console.error('Error fetching departments:', error);
+        }
+      }
+      if (departmentId) {
+        try {
+          const citiesData = await getCitiesByDepartment(departmentId);
+          setCities(citiesData);
+        } catch (error) {
+          console.error('Error fetching cities:', error);
+        }
+      }
+    }
+    setShowModal(true);
+  };
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -95,23 +87,29 @@ const AddressSection = ({ provider, onUpdate }) => {
   const handleProvinceChange = async (e) => {
     const provinceId = e.target.value;
     handleChange(e);
-    try {
-      const departmentsData = await getDepartmentsByProvince(provinceId);
-      setDepartments(departmentsData);
-      setCities([]);
-    } catch (error) {
-      console.error('Error fetching departments:', error);
+    setDepartments([]);
+    setCities([]);
+    if (provinceId) {
+      try {
+        const departmentsData = await getDepartmentsByProvince(provinceId);
+        setDepartments(departmentsData);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
     }
   };
 
   const handleDepartmentChange = async (e) => {
     const departmentId = e.target.value;
     handleChange(e);
-    try {
-      const citiesData = await getCitiesByDepartment(departmentId);
-      setCities(citiesData);
-    } catch (error) {
-      console.error('Error fetching cities:', error);
+    setCities([]);
+    if (departmentId) {
+      try {
+        const citiesData = await getCitiesByDepartment(departmentId);
+        setCities(citiesData);
+      } catch (error) {
+        console.error('Error fetching cities:', error);
+      }
     }
   };
 
@@ -123,14 +121,6 @@ const AddressSection = ({ provider, onUpdate }) => {
       address: { ...prev.address, [keys[1]]: value }
     }));
   };
-  // const handleChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormData(prev => ({
-  //     ...prev,
-  //     [name]: value
-  //   }));
-  // };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -141,10 +131,9 @@ const AddressSection = ({ provider, onUpdate }) => {
       floor: formData.address.floor,
       apartment: formData.address.apartment,
       postal_code: formData.address.postal_code,
-      city: parseInt(formData.address.city, 10) || null  // 👈 convierte a entero o null
+      city: parseInt(formData.address.city, 10) || null
     };
 
-    console.log('Submitting address data:', payload);
     try {
       await updateProvider(token, { address: payload });
       onUpdate();
@@ -153,31 +142,6 @@ const AddressSection = ({ provider, onUpdate }) => {
       console.error('Error updating address:', error);
     }
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const payload = {
-  //     id_address: formData.id_address,
-  //     street: formData.street,
-  //     number: formData.number,
-  //     floor: formData.floor,
-  //     apartment: formData.apartment,
-  //     postal_code: formData.postal_code,
-  //     city: parseInt(formData.city, 10) || null  // Asegurás que sea número o null
-  //   };
-
-  //   console.log('Submitting address data:', payload);
-
-  //   try {
-  //     await updateProvider(token, payload);  // ⬅️ ya no envolvés en { address: payload }
-  //     onUpdate();
-  //     handleClose();
-  //   } catch (error) {
-  //     console.error('Error updating address:', error);
-  //   }
-  // };
-
-
 
   return (
     <div className="address-section">
@@ -209,20 +173,7 @@ const AddressSection = ({ provider, onUpdate }) => {
         </Modal.Header>
         <Modal.Body>
           <AddressForm
-            // formData={formData}
-            formData={{
-    ...formData,
-    address: formData.address || {
-      street: "",
-      number: "",
-      floor: "",
-      apartment: "",
-      postal_code: "",
-      city: "",
-      province: "",
-      department: "",
-    },
-  }}
+            formData={formData}
             provinces={provinces}
             departments={departments}
             cities={cities}
