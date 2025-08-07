@@ -51,7 +51,7 @@ const AddressForm = ({
 
     <Form.Group className="mb-3">
       <Form.Label>Ciudad</Form.Label>
-      <Form.Select name="address.city" value={formData.address.city} onChange={handleChange}>
+      <Form.Select name="address.city" value={formData.city} onChange={handleChange}>
         <option value="">Seleccione una ciudad</option>
         {cities.map((c) => (
           <option key={c.id_city} value={c.id_city}>{c.name}</option>

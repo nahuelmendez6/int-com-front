@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Container, Row, Col, Card, Image } from 'react-bootstrap';
 import { getProviderProfileData, getProfile } from '../services/profileService.js';
 import ProfessionalInfoSection from '../components/profile/ProfessionalInfoSection.jsx';
+import AddressSection from '../components/profile/AddressSection.jsx';
+import './ProviderProfilePage.css';
 
 export const ProviderProfilePage = () => {
   const [provider, setProvider] = useState(null);
@@ -42,19 +45,29 @@ export const ProviderProfilePage = () => {
   if (!provider || !user) return <p>Cargando...</p>;
 
   return (
-    <div className="container mt-5">
-      <h2>Perfil del Proveedor</h2>
-      <div className="card">
-        <div className="card-body">
-          <h5 className="card-title">Datos Personales</h5>
-          <p><strong>Nombre:</strong> {user.name} {user.lastname}</p>
-          <p><strong>Email:</strong> {user.email}</p>
+    <Container className="mt-5">
+      <header className="profile-page-header text-center mb-4">
+        <Image src={`https://ui-avatars.com/api/?name=${user.name}+${user.lastname}`} roundedCircle className="profile-avatar mb-3" />
+        <h2>{user.name} {user.lastname}</h2>
+        <p className="text-muted">{provider?.profession?.name}</p>
+      </header>
 
-          <h5 className="card-title mt-4">Datos de Proveedor</h5>
+      <Row>
+        <Col md={4}>
+          <Card className="mb-4">
+            <Card.Body>
+              <Card.Title>Datos de Contacto</Card.Title>
+              <p><strong>Email:</strong> {user.email}</p>
+              {/* Aquí se puede agregar más información de contacto */}
+            </Card.Body>
+          </Card>
+          <AddressSection provider={provider} onUpdate={fetchProviderData} />
+        </Col>
+        <Col md={8}>
           <ProfessionalInfoSection provider={provider} onUpdate={fetchProviderData} />
-        </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

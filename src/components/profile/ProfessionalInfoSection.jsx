@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Card, ListGroup, Badge } from 'react-bootstrap';
+import { FiEdit } from 'react-icons/fi';
 import { getProfessions, getCategories, getTypeProviders, getProviderProfileData, updateProvider } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
 import ProviderInfoForm from '../registrationForm/ProviderInfoForm';
+import './ProfessionalInfoSection.css';
 
 const ProfessionalInfoSection = ({ provider, onUpdate }) => {
   const { token, isLoading } = useAuth();
@@ -72,14 +74,37 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
 
   return (
     <div className="profile-section">
-      {/* <h3>Información Profesional</h3> */}
-      <div>
-        <p><strong>Profesión:</strong> {provider?.profession?.name}</p>
-        <p><strong>Tipo de Proveedor:</strong> {provider?.type_provider?.name}</p>
-        <p><strong>Categorías:</strong> {provider?.categories?.map(c => c.name).join(', ')}</p>
-        <p><strong>Descripción:</strong> {provider?.description}</p>
-      </div>
-      <Button variant="primary" onClick={handleShow}>Editar</Button>
+      <Card>
+        <Card.Body>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <Card.Title>Información Profesional</Card.Title>
+            <Button variant="light" onClick={handleShow} className="edit-button">
+              <FiEdit />
+            </Button>
+          </div>
+          <ListGroup variant="flush">
+            <ListGroup.Item>
+              <strong>Profesión:</strong> {provider?.profession?.name}
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <strong>Tipo de Proveedor:</strong> {provider?.type_provider?.name}
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <strong>Categorías:</strong>
+              <div>
+                {provider?.categories?.map(c => (
+                  <Badge pill bg="primary" key={c.id_category} className="me-1 mb-1">
+                    {c.name}
+                  </Badge>
+                ))}
+              </div>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <strong>Descripción:</strong> {provider?.description}
+            </ListGroup.Item>
+          </ListGroup>
+        </Card.Body>
+      </Card>
 
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>

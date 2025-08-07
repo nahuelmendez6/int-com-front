@@ -76,10 +76,12 @@ export const updateProviderProfile = async (token, providerData) => {
 }
 
 export const updateProvider = async (token, providerData) => {
-    const response = await axios.patch(`${API_AUTH_URL}/update-provider/`, providerData, {
+    const response = await axios.patch(`${API_BASE_URL}/provider-profile/update/`, providerData, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
     return response.data;
 }
+
+

@@ -1,0 +1,20 @@
+.address-section .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.address-section .list-group-item {
+  border: none;
+  padding: 0.5rem 0;
+}
+
+.address-section .list-group-item strong {
+  margin-right: 0.5rem;
+}
+
+.edit-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
