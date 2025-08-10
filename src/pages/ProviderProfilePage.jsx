@@ -89,6 +89,7 @@ export const ProviderProfilePage = () => {
             <ProviderServiceArea
               providerId={provider?.id_provider}
               onEdit={() => setIsEditingServiceArea(true)}
+              onUpdate={handleServiceAreaUpdate}
             />
           )}
         </Col>

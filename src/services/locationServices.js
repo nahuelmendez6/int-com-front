@@ -90,3 +90,18 @@ export const updateProviderCities = async (token, data) => {
     }
 };
 
+export const removeCityFromProviderArea = async (token, providerId, cityId) => {
+    try {
+        // Corrected endpoint based on user feedback
+        // const API_BASE_URL = 'http://127.0.0.1:8000'; 
+        const response = await axios.delete(`${API_URL}/providers/${providerId}/cities/${cityId}/`, {
+            headers: {
+                Authorization: `Token ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(`Error removing city ${cityId} from provider ${providerId}:`, error.response?.data || error);
+        throw error;
+    }
+};
