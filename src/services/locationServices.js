@@ -60,3 +60,23 @@ export const getCities = async () => {
         throw error;
     }
 };
+
+export const updateProviderCities = async (token, data) => {
+    try {
+        const response = await axios.post(
+            `${API_URL}/provider-cities/`,
+            data,
+            {
+                headers: {
+                    Authorization: `Token ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error updating provider cities:', error.response?.data || error);
+        throw error;
+    }
+};
+

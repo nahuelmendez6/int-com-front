@@ -3,6 +3,7 @@ import { Container, Row, Col, Card, Image } from 'react-bootstrap';
 import { getProviderProfileData, getProfile } from '../services/profileService.js';
 import ProfessionalInfoSection from '../components/profile/ProfessionalInfoSection.jsx';
 import AddressSection from '../components/profile/AddressSection.jsx';
+import ServiceAreaSection from '../components/profile/ServiceAreaSection.jsx';
 import './ProviderProfilePage.css';
 
 export const ProviderProfilePage = () => {
@@ -16,6 +17,8 @@ export const ProviderProfilePage = () => {
 
     try {
       const providerData = await getProviderProfileData(token);
+      console.log("📦 providerData recibido:", providerData);
+
       setProvider(providerData);
     } catch (err) {
       setError(true);
@@ -62,6 +65,7 @@ export const ProviderProfilePage = () => {
             </Card.Body>
           </Card>
           <AddressSection provider={provider} onUpdate={fetchProviderData} />
+          <ServiceAreaSection provider={provider} onUpdate={fetchProviderData} />
         </Col>
         <Col md={8}>
           <ProfessionalInfoSection provider={provider} onUpdate={fetchProviderData} />
