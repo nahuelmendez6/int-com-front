@@ -4,12 +4,14 @@ import { getProviderProfileData, getProfile } from '../services/profileService.j
 import ProfessionalInfoSection from '../components/profile/ProfessionalInfoSection.jsx';
 import AddressSection from '../components/profile/AddressSection.jsx';
 import ServiceAreaSection from '../components/profile/ServiceAreaSection.jsx';
+import ProviderServiceArea from '../components/profile/ProviderServiceArea.jsx';
 import './ProviderProfilePage.css';
 
 export const ProviderProfilePage = () => {
   const [provider, setProvider] = useState(null);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(false);
+  const [isEditingServiceArea, setIsEditingServiceArea] = useState(false);
 
   const fetchProviderData = useCallback(async () => {
     const token = localStorage.getItem('token');
@@ -17,8 +19,6 @@ export const ProviderProfilePage = () => {
 
     try {
       const providerData = await getProviderProfileData(token);
-      console.log("📦 providerData recibido:", providerData);
-
       setProvider(providerData);
     } catch (err) {
       setError(true);
@@ -44,6 +44,11 @@ export const ProviderProfilePage = () => {
     fetchInitialData();
   }, [fetchProviderData]);
 
+  const handleServiceAreaUpdate = () => {
+    fetchProviderData();
+    setIsEditingServiceArea(false);
+  };
+
   if (error) return <p>Ocurrió un error al cargar el perfil.</p>;
   if (!provider || !user) return <p>Cargando...</p>;
 
@@ -55,20 +60,37 @@ export const ProviderProfilePage = () => {
         <p className="text-muted">{provider?.profession?.name}</p>
       </header>
 
-      <Row>
+      <Row className="mb-4">
+        <Col md={8}>
+          <ProfessionalInfoSection provider={provider} onUpdate={fetchProviderData} />
+        </Col>
         <Col md={4}>
-          <Card className="mb-4">
+          <Card>
             <Card.Body>
               <Card.Title>Datos de Contacto</Card.Title>
               <p><strong>Email:</strong> {user.email}</p>
               {/* Aquí se puede agregar más información de contacto */}
             </Card.Body>
           </Card>
-          <AddressSection provider={provider} onUpdate={fetchProviderData} />
-          <ServiceAreaSection provider={provider} onUpdate={fetchProviderData} />
         </Col>
-        <Col md={8}>
-          <ProfessionalInfoSection provider={provider} onUpdate={fetchProviderData} />
+      </Row>
+      <Row>
+        <Col md={6} className="mb-4">
+          <AddressSection provider={provider} onUpdate={fetchProviderData} />
+        </Col>
+        <Col md={6} className="mb-4">
+          {isEditingServiceArea ? (
+            <ServiceAreaSection
+              provider={provider}
+              onUpdate={handleServiceAreaUpdate}
+              onCancel={() => setIsEditingServiceArea(false)}
+            />
+          ) : (
+            <ProviderServiceArea
+              providerId={provider?.id_provider}
+              onEdit={() => setIsEditingServiceArea(true)}
+            />
+          )}
         </Col>
       </Row>
     </Container>

@@ -32,6 +32,16 @@ export const getCitiesByDepartment = async (departmentId) => {
     }
 };
 
+export const getProviderArea = async (providerId) => {
+    try {
+        const response = await axios.get(`${API_URL}/cities-area/${providerId}/`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching service area for provider ${providerId}:`, error);
+        throw error;
+    }
+};
+
 export const createAddress = async (addressData) => {
     try {
         const payload = {
