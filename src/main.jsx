@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProviderProfilePage from './pages/ProviderProfilePage';
+import CustomerProfile from './pages/CustomerProfile.jsx';
 
 const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
             path: "/dashboard-customer",
             element: <Dashboard />,
           },
+          {
+            path: "/customer-profile",
+            element: <CustomerProfile />,
+          }
         ],
       },
       {
@@ -59,7 +64,7 @@ const router = createBrowserRouter([
             element: <Dashboard />,
           },
           {
-            path: "/profile",
+            path: "/provider-profile",
             element: <ProviderProfilePage />,
           },
         ],

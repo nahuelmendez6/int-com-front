@@ -84,4 +84,12 @@ export const updateProvider = async (token, providerData) => {
     return response.data;
 }
 
+export const updateProfileImage = (token, formData) => {
+    return axios.patch(`${API_AUTH_URL}/profile-picture/update/`, formData, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+}
 
