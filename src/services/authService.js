@@ -1,11 +1,13 @@
-import axios from "axios";
+// import axios from "axios";
 
-const API_URL = 'http://127.0.0.1:8000/auth';
+
+import api from './api';
+// const API_URL = 'http://127.0.0.1:8000/auth';
 
 
 export const registerUser = async (formData) => {
     try {
-        const response = await axios.post(`${API_URL}/register-user/`, formData);
+        const response = await api.post('auth/register-user/', formData);
         return response.data;
     } catch (error) {
         console.error('Error axios:', error.response);
@@ -15,7 +17,7 @@ export const registerUser = async (formData) => {
 
 export const login = async (credentials) => {
     try {
-        const response = await axios.post(`${API_URL}/login/`, credentials, {
+        const response = await api.post('auth/login/', credentials, {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -30,7 +32,7 @@ export const login = async (credentials) => {
 
 export const verifyCode = async (code) => {
     try {
-        const response = await axios.post(`${API_URL}/verify-code/`, code);
+        const response = await api.post('auth/verify-code/', code);
         return response.data;
     } catch (error) {
         console.error('Error axios:', error.response);

@@ -1,10 +1,10 @@
 import axios from 'axios';
-
-const API_URL = 'http://127.0.0.1:8000/locations';
+import api from './api';
+// const API_URL = 'http://127.0.0.1:8000/locations';
 
 export const getProvinces = async () => {
     try {
-        const response = await axios.get(`${API_URL}/provinces/`);
+        const response = await api.get('locations/provinces/');
         return response.data;
     } catch (error) {
         console.error('Error fetching provinces:', error);
@@ -14,7 +14,7 @@ export const getProvinces = async () => {
 
 export const getDepartmentsByProvince = async (provinceId) => {
     try {
-        const response = await axios.get(`${API_URL}/departments/?province_id=${provinceId}`);
+        const response = await api.get('locations/departments/?province_id=${provinceId}');
         return response.data;
     } catch (error) {
         console.error(`Error fetching departments for province ${provinceId}:`, error);
@@ -24,7 +24,7 @@ export const getDepartmentsByProvince = async (provinceId) => {
 
 export const getCitiesByDepartment = async (departmentId) => {
     try {
-        const response = await axios.get(`${API_URL}/cities/by-department/${departmentId}/`);
+        const response = await api.get(`locations/cities/by-department/${departmentId}/`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching cities for department ${departmentId}:`, error);
@@ -34,7 +34,7 @@ export const getCitiesByDepartment = async (departmentId) => {
 
 export const getProviderArea = async (providerId) => {
     try {
-        const response = await axios.get(`${API_URL}/cities-area/${providerId}/`);
+        const response = await api.get(`locations/cities-area/${providerId}/`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching service area for provider ${providerId}:`, error);
@@ -53,9 +53,9 @@ export const createAddress = async (addressData) => {
             city: addressData.city,
         };
         console.log('Payload for createAddress:', payload);
-        const response = await axios.post(`${API_URL}/addresses/`, payload);
+        const response = await api.post(`locations/addresses/`, payload);
         return response.data;
-    } catch (error) {
+0    } catch (error) {
         console.error('Error creating address:', error);
         throw error.response?.data || { detail: 'Error al crear la dirección' };
     }
@@ -63,7 +63,7 @@ export const createAddress = async (addressData) => {
 
 export const getCities = async () => {
     try {
-        const response = await axios.get(`${API_URL}/cities/`);
+        const response = await api.get(`locations/cities/`);
         return response.data;
     } catch (error) {
         console.error('Error fetching cities:', error);
@@ -73,8 +73,8 @@ export const getCities = async () => {
 
 export const updateProviderCities = async (token, data) => {
     try {
-        const response = await axios.post(
-            `${API_URL}/provider-cities/`,
+        const response = await api.post(
+            `/locations/provider-cities/`,
             data,
             {
                 headers: {
@@ -94,7 +94,7 @@ export const removeCityFromProviderArea = async (token, providerId, cityId) => {
     try {
         // Corrected endpoint based on user feedback
         // const API_BASE_URL = 'http://127.0.0.1:8000'; 
-        const response = await axios.delete(`${API_URL}/providers/${providerId}/cities/${cityId}/`, {
+        const response = await api.delete(`locations/providers/${providerId}/cities/${cityId}/`, {
             headers: {
                 Authorization: `Token ${token}`
             }

@@ -1,20 +1,25 @@
-.address-section .card-title {
-  font-size: 1.1rem;
+.address-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.address-item {
+  background-color: #f7f7f7;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-label {
   font-weight: 600;
-  margin-bottom: 1rem;
+  color: #555;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
 }
 
-.address-section .list-group-item {
-  border: none;
-  padding: 0.5rem 0;
-}
-
-.address-section .list-group-item strong {
-  margin-right: 0.5rem;
-}
-
-.edit-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
+.address-value {
+  color: #333;
+  font-size: 1rem;
 }

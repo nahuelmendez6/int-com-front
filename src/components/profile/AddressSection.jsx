@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Card, ListGroup } from 'react-bootstrap';
+import { Button, Modal, Card } from 'react-bootstrap';
 import { FiEdit } from 'react-icons/fi';
 import { getProvinces, getDepartmentsByProvince, getCitiesByDepartment } from '../../services/locationServices';
 import { updateProvider } from '../../services/profileService';
@@ -153,17 +153,28 @@ const AddressSection = ({ provider, onUpdate }) => {
               <FiEdit />
             </Button>
           </div>
-          <ListGroup variant="flush">
-            <ListGroup.Item>
-              <strong>Calle:</strong> {provider?.address?.street}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Número:</strong> {provider?.address?.number}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              <strong>Ciudad:</strong> {provider?.address?.city?.name}
-            </ListGroup.Item>
-          </ListGroup>
+          <div className="address-details">
+            <div className="address-item">
+              <span className="address-label">Calle:</span>
+              <span className="address-value">{provider?.address?.street}</span>
+            </div>
+            <div className="address-item">
+              <span className="address-label">Número:</span>
+              <span className="address-value">{provider?.address?.number}</span>
+            </div>
+            <div className="address-item">
+              <span className="address-label">Piso:</span>
+              <span className="address-value">{provider?.address?.floor}</span>
+            </div>
+            <div className="address-item">
+              <span className="address-label">Departamento:</span>
+              <span className="address-value">{provider?.address?.apartment}</span>
+            </div>
+            <div className="address-item">
+              <span className="address-label">Ciudad:</span>
+              <span className="address-value">{provider?.address?.city_detail?.name}</span>
+            </div>
+          </div>
         </Card.Body>
       </Card>
 

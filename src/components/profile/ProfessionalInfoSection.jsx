@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Card, ListGroup, Badge } from 'react-bootstrap';
+import { Button, Modal, Card, ListGroup, Badge, Row, Col } from 'react-bootstrap';
 import { FiEdit } from 'react-icons/fi';
 import { getProfessions, getCategories, getTypeProviders, getProviderProfileData, updateProvider } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
@@ -27,9 +27,12 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
       try {
         const professionsData = await getProfessions();
         setProfessions(professionsData);
+        console.log('Professions data:', professionsData);
         const categoriesData = await getCategories();
+        console.log('Categories data:', categoriesData);
         setCategories(categoriesData);
         const typeProvidersData = await getTypeProviders();
+        console.log('Type Providers data:', typeProvidersData);
         setTypeProviders(typeProvidersData);
       } catch (error) {
         console.error('Error al obtener las opciones:', error);
@@ -84,23 +87,34 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
           </div>
           <ListGroup variant="flush">
             <ListGroup.Item>
-              <strong>Profesión:</strong> {provider?.profession?.name}
+              <Row>
+                <Col sm={3}><strong>Profesión:</strong></Col>
+                <Col sm={9}>{provider?.profession?.name}</Col>
+              </Row>
             </ListGroup.Item>
             <ListGroup.Item>
-              <strong>Tipo de Proveedor:</strong> {provider?.type_provider?.name}
+              <Row>
+                <Col sm={3}><strong>Tipo de Proveedor:</strong></Col>
+                <Col sm={9}>{provider?.type_provider?.name}</Col>
+              </Row>
             </ListGroup.Item>
             <ListGroup.Item>
-              <strong>Categorías:</strong>
-              <div>
-                {provider?.categories?.map(c => (
-                  <Badge pill bg="primary" key={c.id_category} className="me-1 mb-1">
-                    {c.name}
-                  </Badge>
-                ))}
-              </div>
+              <Row>
+                <Col sm={3}><strong>Categorías:</strong></Col>
+                <Col sm={9}>
+                  {provider?.categories?.map(c => (
+                    <Badge pill bg="primary" key={c.id_category} className="me-1 mb-1">
+                      {c.name}
+                    </Badge>
+                  ))}
+                </Col>
+              </Row>
             </ListGroup.Item>
             <ListGroup.Item>
-              <strong>Descripción:</strong> {provider?.description}
+              <Row>
+                <Col sm={3}><strong>Descripción:</strong></Col>
+                <Col sm={9}>{provider?.description}</Col>
+              </Row>
             </ListGroup.Item>
           </ListGroup>
         </Card.Body>

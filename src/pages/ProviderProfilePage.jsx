@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Container, Row, Col, Card, Image, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Image, Button, ListGroup } from 'react-bootstrap';
 import { getProviderProfileData, getProfile, updateProfileImage } from '../services/profileService.js';
 import ProfessionalInfoSection from '../components/profile/ProfessionalInfoSection.jsx';
 import AddressSection from '../components/profile/AddressSection.jsx';
 import ServiceAreaSection from '../components/profile/ServiceAreaSection.jsx';
 import ProviderServiceArea from '../components/profile/ProviderServiceArea.jsx';
 import './ProviderProfilePage.css';
+
+
 
 export const ProviderProfilePage = () => {
   const [provider, setProvider] = useState(null);
@@ -15,6 +17,7 @@ export const ProviderProfilePage = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
+  const {token, isLoading} = useAuth();
 
   const fileInputRef = useRef(null)
 
@@ -161,24 +164,40 @@ export const ProviderProfilePage = () => {
       </header>
 
       <Row className="mb-4">
-        <Col md={8}>
+        <Col>
           <ProfessionalInfoSection provider={provider} onUpdate={fetchProviderData} />
         </Col>
-        <Col md={4}>
+      </Row>
+      <Row className="mb-4">
+        <Col>
+          <AddressSection provider={provider} onUpdate={fetchProviderData} />
+        </Col>
+      </Row>
+      <Row className="mb-4">
+        <Col>
           <Card>
             <Card.Body>
               <Card.Title>Datos de Contacto</Card.Title>
-              <p><strong>Email:</strong> {user.email}</p>
-              {/* Aquí se puede agregar más información de contacto */}
+              <ListGroup variant="flush">
+                <ListGroup.Item>
+                  <Row>
+                    <Col sm={3}><strong>Email:</strong></Col>
+                    <Col sm={9}>{user.email}</Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Row>
+                    <Col sm={3}><strong>Teléfono:</strong></Col>
+                    <Col sm={9}>{user.phone}</Col>
+                  </Row>
+                </ListGroup.Item>
+              </ListGroup>
             </Card.Body>
           </Card>
         </Col>
       </Row>
-      <Row>
-        <Col md={6} className="mb-4">
-          <AddressSection provider={provider} onUpdate={fetchProviderData} />
-        </Col>
-        <Col md={6} className="mb-4">
+      <Row className="mb-4">
+        <Col>
           {isEditingServiceArea ? (
             <ServiceAreaSection
               provider={provider}

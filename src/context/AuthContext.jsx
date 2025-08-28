@@ -1,6 +1,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { login as authLogin } from '../services/authService';
 
+
+import axios from 'axios';
+
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -12,23 +15,26 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true); // New loading state
 
   useEffect(() => {
-    const loadAuthData = () => {
-      const storedUser = localStorage.getItem('user');
-      const storedToken = localStorage.getItem('token');
-      const storedRole = localStorage.getItem('role');
-      const storedUserId = localStorage.getItem('userId');
+  const loadAuthData = () => {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    const storedRole = localStorage.getItem('role');
+    const storedUserId = localStorage.getItem('userId');
 
-      if (storedUser && storedToken && storedRole && storedUserId) {
-        setUser(JSON.parse(storedUser));
-        setToken(storedToken);
-        setRole(storedRole);
-        setUserId(storedUserId);
-      }
-      setIsLoading(false); // Set loading to false after attempting to load data
-    };
+    if (storedUser && storedToken && storedRole && storedUserId) {
+      setUser(JSON.parse(storedUser));
+      setToken(storedToken);
+      setRole(storedRole);
+      setUserId(storedUserId);
 
-    loadAuthData();
-  }, []);
+      // 👇 configurar axios con el token al recargar
+      // axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+    }
+    setIsLoading(false);
+  };
+
+  loadAuthData();
+}, []);
 
   const login = async (credentials) => {
     try {
@@ -48,6 +54,8 @@ export const AuthProvider = ({ children }) => {
       setRole(role);
       setUserId(user_id);
 
+      axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
+
       return data; // Return data for redirection logic in components
     } catch (error) {
       console.error('Login error in AuthContext:', error);
@@ -65,6 +73,8 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     setRole(null);
     setUserId(null);
+
+    delete axios.defaults.headers.common["Authorization"];
   };
 
   return (
