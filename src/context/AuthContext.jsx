@@ -1,62 +1,70 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { login as authLogin } from '../services/authService';
+import axios from 'axios'; // 🔹 Importar axios
+import { login as authLogin } from '../services/authService'; // 🔹 Función de login
+import { getProfile, getProviderProfileData, updateProfileImage as updateProfileImageService } from '../services/profileService'; // 🔹 Funciones de perfil
 
-
-import axios from 'axios';
 
 const AuthContext = createContext(null);
 
+
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
+  const [profile, setProfile] = useState(null);           // datos básicos del usuario
+  const [providerProfile, setProviderProfile] = useState(null); // datos extendidos si es provider
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
   const [userId, setUserId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true); // New loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-  const loadAuthData = () => {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
     const storedUserId = localStorage.getItem('userId');
 
-    if (storedUser && storedToken && storedRole && storedUserId) {
-      setUser(JSON.parse(storedUser));
+    if (storedToken && storedRole && storedUserId) {
       setToken(storedToken);
       setRole(storedRole);
       setUserId(storedUserId);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
 
-      // 👇 configurar axios con el token al recargar
-      // axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+      fetchProfileData(storedToken, storedRole);
     }
     setIsLoading(false);
-  };
+  }, []);
 
-  loadAuthData();
-}, []);
+  const fetchProfileData = async (token, role) => {
+    try {
+      const profileData = await getProfile(token);
+      setProfile(profileData);
+
+      if (role === 'provider') {
+        const providerData = await getProviderProfileData(token);
+        setProviderProfile(providerData);
+      }
+    } catch (err) {
+      console.error("Error fetching profile data:", err);
+    }
+  };
 
   const login = async (credentials) => {
     try {
       const data = await authLogin(credentials);
       const { access, refresh, role, user_id, email } = data;
 
-      const userData = { email };
-
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', access); // Store access token
-      localStorage.setItem('refreshToken', refresh); // Store refresh token
+      localStorage.setItem('user', JSON.stringify({ email }));
+      localStorage.setItem('token', access);
+      localStorage.setItem('refreshToken', refresh);
       localStorage.setItem('role', role);
       localStorage.setItem('userId', user_id);
 
-      setUser(userData);
       setToken(access);
       setRole(role);
       setUserId(user_id);
 
       axios.defaults.headers.common["Authorization"] = `Bearer ${access}`;
 
-      return data; // Return data for redirection logic in components
+      await fetchProfileData(access, role);
+      return data;
     } catch (error) {
       console.error('Login error in AuthContext:', error);
       throw error;
@@ -64,21 +72,44 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('role');
-    localStorage.removeItem('userId');
-    setUser(null);
+    localStorage.clear();
+    setProfile(null);
+    setProviderProfile(null);
     setToken(null);
     setRole(null);
     setUserId(null);
-
     delete axios.defaults.headers.common["Authorization"];
   };
 
+  const updateProfileImage = async (file) => {
+    if (!token) return;
+
+    const formData = new FormData();
+    formData.append("profile_image", file);
+
+    try {
+      await updateProfileImageService(token, formData);
+      const updatedProfile = await getProfile(token);
+      setProfile(updatedProfile);
+    } catch (err) {
+      console.error("Error updating profile image:", err);
+      throw err;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, role, userId, login, logout, isLoading }}>
+    <AuthContext.Provider value={{
+      profile,
+      providerProfile,
+      token,
+      role,
+      userId,
+      login,
+      logout,
+      isLoading,
+      updateProfileImage,
+      fetchProfileData
+    }}>
       {children}
     </AuthContext.Provider>
   );
