@@ -23,25 +23,30 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
   const handleShow = () => setShowModal(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchOptions = async () => {
       try {
-        const professionsData = await getProfessions();
+        const professionsData = await getProfessions(signal);
         setProfessions(professionsData);
         console.log('Professions data:', professionsData);
-        const categoriesData = await getCategories();
+        const categoriesData = await getCategories(signal);
         console.log('Categories data:', categoriesData);
         setCategories(categoriesData);
-        const typeProvidersData = await getTypeProviders();
+        const typeProvidersData = await getTypeProviders(signal);
         console.log('Type Providers data:', typeProvidersData);
         setTypeProviders(typeProvidersData);
       } catch (error) {
-        console.error('Error al obtener las opciones:', error);
+        if (error.name !== 'CanceledError') {
+          console.error('Error al obtener las opciones:', error);
+        }
       }
     };
 
     const fetchProviderData = async () => {
       try {
-        const providerData = await getProviderProfileData(token);
+        const providerData = await getProviderProfileData(token, signal);
         setFormData({
           profession: providerData.profession?.id_profession || '',
           type_provider: providerData.type_provider?.id_type_provider || '',
@@ -49,7 +54,9 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
           description: providerData.description || ''
         });
       } catch (error) {
-        console.error('Error fetching provider data:', error);
+        if (error.name !== 'CanceledError') {
+          console.error('Error fetching provider data:', error);
+        }
       }
     };
 
@@ -57,6 +64,10 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
     if (token && !isLoading) {
       fetchProviderData();
     }
+
+    return () => {
+      controller.abort();
+    };
   }, [token, isLoading]);
 
   const handleChange = (e) => {

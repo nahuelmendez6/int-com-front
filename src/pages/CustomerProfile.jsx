@@ -1,32 +1,24 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { Container, Row, Col, Card, Image, Button } from 'react-bootstrap';
-import { getProfile, updateProfileImage } from '../services/profileService.js';
+import React, { useState, useRef } from 'react';
+import { Container, Card, Image, Button, ListGroup, Row, Col } from 'react-bootstrap';
+import AddressSection from '../components/profile/AddressSection.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
 
 export const CustomerProfile = () => {
-    const [customer, setCustomer] = useState(null);
-    const [user, setUser] = useState(null);
     const [error, setError] = useState(false);
     const [previewImage, setPreviewImage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
 
+    const {
+        profile: user,
+        updateProfileImage,
+        customerProfile,
+        fetchProfileData,
+        isLoading,
+        token,
+        role
+      } = useAuth();
+    
     const fileInputRef = useRef(null);
-
-    const fetchCustomerData = useCallback(async () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        try {
-            const customerData = await getProfile(token);
-            setCustomer(customerData);
-            setUser(customerData);
-        } catch (err) {
-            setError(true);
-            console.error('Error fetching customer data:', err);
-        }
-    }, []);
-
-    useEffect(() => {
-        fetchCustomerData();
-    }, [fetchCustomerData]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -38,14 +30,9 @@ export const CustomerProfile = () => {
 
     const handleUploadImage = async () => {
         if (!selectedFile) return;
-
-        const token = localStorage.getItem('token');
-        const formData = new FormData();
-        formData.append('profile_image', selectedFile);
         
         try {
-            await updateProfileImage(token, formData);
-            await fetchCustomerData(); // Refetch customer data after upload
+            await updateProfileImage(selectedFile);
             setSelectedFile(null);
             setPreviewImage(null);
         } catch (err) {
@@ -54,8 +41,17 @@ export const CustomerProfile = () => {
         }
     };
 
+    const handleProfileUpdate = async () => {
+        try {
+            await fetchProfileData(token, role);
+        } catch (err) {
+            console.error("Error refetching profile data:", err);
+        }
+    };
+
+    if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error loading profile data.</div>;
-    if (!customer || !user) return <div>Loading...</div>;
+    if (!user) return <div>Could not load user profile.</div>;
 
     return (
     <Container className="mt-5">
@@ -100,29 +96,35 @@ export const CustomerProfile = () => {
           )}
         </div>
         <h2>{user.name} {user.lastname}</h2>
-        <p className="text-muted">{customer?.profession?.name || 'Cliente'}</p>
+        <p className="text-muted">{user?.profession?.name || 'Cliente'}</p>
       </header>
 
-      <Row className="mb-4">
-        <Col md={8}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Información Personal</Card.Title>
-              <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Teléfono:</strong> {customer?.phone || 'No disponible'}</p>
-              {/* Puedes agregar más campos específicos del cliente */}
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={4}>
-          <Card>
-            <Card.Body>
-              <Card.Title>Dirección</Card.Title>
-              <p>{customer?.address || 'No disponible'}</p>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
+      <Card className="mb-4">
+        <Card.Body>
+          <Card.Title>Datos de Contacto</Card.Title>
+          <ListGroup variant="flush">
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Email:</strong></Col>
+                <Col sm={9}>{user.email}</Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Teléfono:</strong></Col>
+                <Col sm={9}>{user.phone || 'No disponible'}</Col>
+              </Row>
+            </ListGroup.Item>
+          </ListGroup>
+        </Card.Body>
+      </Card>
+
+      <Card className="mb-4">
+        <Card.Body>
+          <Card.Title>Dirección</Card.Title>
+          <AddressSection customer={customerProfile} onUpdate={handleProfileUpdate} />
+        </Card.Body>
+      </Card>
     </Container>
   );
 };

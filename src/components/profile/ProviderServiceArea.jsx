@@ -12,23 +12,32 @@ const ProviderServiceArea = ({ providerId, onEdit, onUpdate }) => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [cityToDelete, setCityToDelete] = useState(null);
 
-    const fetchServiceArea = async () => {
-        if (!providerId) return;
-        try {
-            setLoading(true);
-            const areaData = await getProviderArea(providerId);
-            setServiceArea(areaData);
-            setError(null);
-        } catch (err) {
-            setError('Error al cargar el área de servicio.');
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
+        const fetchServiceArea = async () => {
+            if (!providerId) return;
+            try {
+                setLoading(true);
+                const areaData = await getProviderArea(providerId, signal);
+                setServiceArea(areaData);
+                setError(null);
+            } catch (err) {
+                if (err.name !== 'CanceledError') {
+                    setError('Error al cargar el área de servicio.');
+                    console.error(err);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
         fetchServiceArea();
+
+        return () => {
+            controller.abort();
+        };
     }, [providerId]);
 
     const handleDeleteClick = (cityId) => {

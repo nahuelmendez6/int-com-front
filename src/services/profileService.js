@@ -5,18 +5,19 @@ import api from './api';
 const API_BASE_URL = 'http://127.0.0.1:8000/profiles';
 const API_AUTH_URL = 'http://127.0.0.1:8000/auth';
 
-export const checkProfileStatus = async (token) => {
+export const checkProfileStatus = async (token, signal) => {
     const trimmedToken = token.trim();
     const response = await api.get(`profiles/profile-status/`, {
         headers: {
             Authorization: `Bearer ${trimmedToken}`
-        }
+        },
+        signal
     });
     return response.data;
 }
 
-export const getProfessions = async () => {
-    const response = await api.get(`profiles/professions`);
+export const getProfessions = async (signal) => {
+    const response = await api.get(`profiles/professions`, { signal });
     return response.data;
 }
 
@@ -25,8 +26,8 @@ export const getCategories = async () => {
     return response.data;
 }
 
-export const getTypeProviders = async () => {
-    const response = await api.get(`profiles/type-providers`);
+export const getTypeProviders = async (signal) => {
+    const response = await api.get(`profiles/type-providers`, { signal });
     return response.data;
 }
 
@@ -39,24 +40,45 @@ export const getProviderProfile = async (token) => {
     return response.data;
 }
 
-export const getProviderProfileData = async (token) => {
+export const getCustomerProfileData = async (token, signal) => {
     const trimmedToken = token.trim();
-    const response = await api.get(`profiles/provider-profile/`, {
+    const response = await api.get(`profiles/customer-profile/`,{
         headers: {
             Authorization: `Bearer ${trimmedToken}`
-        }
+        },
+        signal
     });
     return response.data;
 }
 
-export const getProfile = async (token) => {
+
+export const getProviderProfileData = async (token, signal) => {
     const trimmedToken = token.trim();
-    const response = await api.get(`profiles/profile/`, {
+    const response = await api.get(`profiles/provider-profile/`, {
         headers: {
             Authorization: `Bearer ${trimmedToken}`
-        }
+        },
+        signal
     });
     return response.data;
+}
+
+export const getProfile = async (token, signal) => {
+    try {
+        const trimmedToken = token.trim();
+        const response = await api.get(`profiles/profile/`, {
+            headers: {
+                Authorization: `Bearer ${trimmedToken}`
+            },
+            signal
+        });
+        return response.data;
+    } catch (error) {
+        if (error.name !== 'CanceledError') {
+            console.error('Error fetching profile:', error);
+        }
+        throw error;
+    }
 }
 
 export const updateUserProfile = async (token, userData) => {
@@ -85,6 +107,26 @@ export const updateProvider = async (token, providerData) => {
     });
     return response.data;
 }
+
+
+export const updateCustomer = async (token, customerData) => {
+    const response = await api.patch(`profiles/customer-profile/update/`, customerData, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+    return response.data;
+}
+
+
+// export const updateCustomer = async (token, customerData) = {
+//     const response = await api.patch(`profiles/customer-profile/update/`, customerData, {
+//         headers: {
+//             Authorization: `Bearer ${token}`
+//         }
+//     });
+//     return response.data;
+// }
 
 export const updateProfileImage = (token, formData) => {
     return api.patch(`auth/profile-picture/update/`, formData, {

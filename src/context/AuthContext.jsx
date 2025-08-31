@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios'; // 🔹 Importar axios
 import { login as authLogin } from '../services/authService'; // 🔹 Función de login
-import { getProfile, getProviderProfileData, updateProfileImage as updateProfileImageService } from '../services/profileService'; // 🔹 Funciones de perfil
+import { getProfile, getProviderProfileData, getCustomerProfileData,updateProfileImage as updateProfileImageService } from '../services/profileService'; // 🔹 Funciones de perfil
 
 
 const AuthContext = createContext(null);
@@ -10,13 +10,16 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);           // datos básicos del usuario
   const [providerProfile, setProviderProfile] = useState(null); // datos extendidos si es provider
+  const [customerProfile, setCustomerProfile] = useState(null); // datos extendidos de customer
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const storedToken = localStorage.getItem('token');
     const storedRole = localStorage.getItem('role');
     const storedUserId = localStorage.getItem('userId');
@@ -27,22 +30,31 @@ export const AuthProvider = ({ children }) => {
       setUserId(storedUserId);
       axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
 
-      fetchProfileData(storedToken, storedRole);
+      fetchProfileData(storedToken, storedRole, signal);
     }
     setIsLoading(false);
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
-  const fetchProfileData = async (token, role) => {
+  const fetchProfileData = async (token, role, signal) => {
     try {
-      const profileData = await getProfile(token);
+      const profileData = await getProfile(token, signal);
       setProfile(profileData);
 
       if (role === 'provider') {
-        const providerData = await getProviderProfileData(token);
+        const providerData = await getProviderProfileData(token, signal);
         setProviderProfile(providerData);
+      } else if (role === 'customer') {
+        const customerData = await getCustomerProfileData(token, signal);
+        setCustomerProfile(customerData);
       }
     } catch (err) {
-      console.error("Error fetching profile data:", err);
+      if (err.name !== 'CanceledError') {
+        console.error("Error fetching profile data:", err);
+      }
     }
   };
 
@@ -101,6 +113,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       profile,
       providerProfile,
+      customerProfile,
       token,
       role,
       userId,

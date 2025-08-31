@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, Card } from 'react-bootstrap';
+import { Button, Modal, Card, ListGroup, Row, Col } from 'react-bootstrap';
 import { FiEdit } from 'react-icons/fi';
 import { getProvinces, getDepartmentsByProvince, getCitiesByDepartment } from '../../services/locationServices';
-import { updateProvider } from '../../services/profileService';
+import { updateProvider, updateCustomer } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
 import AddressForm from '../registrationForm/AddressForm';
-import './AddressSection.css';
 
-const AddressSection = ({ provider, onUpdate }) => {
-  const { token } = useAuth();
+
+const AddressSection = ({ provider, customer, onUpdate }) => {
+  const { token, user, role } = useAuth();
+
+  const currentProfile = role === 'provider' ? provider : customer;
+  console.log('perfil: ',currentProfile)
+
+
   const [formData, setFormData] = useState({
     address: {
       id_address: null,
@@ -24,22 +29,22 @@ const AddressSection = ({ provider, onUpdate }) => {
   });
 
   useEffect(() => {
-    if (provider?.address) {
+    if (currentProfile?.address) {
       setFormData({
         address: {
-          id_address: provider.address.id_address || null,
-          street: provider.address.street || '',
-          number: provider.address.number || '',
-          floor: provider.address.floor || '',
-          apartment: provider.address.apartment || '',
-          postal_code: provider.address.postal_code || '',
-          city: provider.address.city?.id_city || '',
-          department: provider.address.city?.department?.id_department || '',
-          province: provider.address.city?.department?.province?.id_province || ''
+          id_address: currentProfile.address.id_address || null,
+          street: currentProfile.address.street || '',
+          number: currentProfile.address.number || '',
+          floor: currentProfile.address.floor || '',
+          apartment: currentProfile.address.apartment || '',
+          postal_code: currentProfile.address.postal_code || '',
+          city: currentProfile.address.city?.id_city || '',
+          department: currentProfile.address.city?.department?.id_department || '',
+          province: currentProfile.address.city?.department?.province?.id_province || ''
         }
       });
     }
-  }, [provider]);
+  }, [currentProfile]);
 
   const [provinces, setProvinces] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -48,9 +53,9 @@ const AddressSection = ({ provider, onUpdate }) => {
 
   const handleClose = () => setShowModal(false);
   const handleShow = async () => {
-    if (provider?.address) {
-      const provinceId = provider.address.city?.department?.province?.id_province;
-      const departmentId = provider.address.city?.department?.id_department;
+    if (currentProfile?.address) {
+      const provinceId = currentProfile.address.city?.department?.province?.id_province;
+      const departmentId = currentProfile.address.city?.department?.id_department;
 
       if (provinceId) {
         try {
@@ -135,12 +140,25 @@ const AddressSection = ({ provider, onUpdate }) => {
     };
 
     try {
-      await updateProvider(token, { address: payload });
+      if (role == "provider") {
+        await updateProvider(token, {address: payload});
+      } else {
+        await updateCustomer(token, {address: payload});
+      }
       onUpdate();
       handleClose();
     } catch (error) {
-      console.error('Error updating address:', error);
+      console.error("Error updating address:", error)
     }
+
+
+    // try {
+    //   await updateProvider(token, { address: payload });
+    //   onUpdate();
+    //   handleClose();
+    // } catch (error) {
+    //   console.error('Error updating address:', error);
+    // }
   };
 
   return (
@@ -153,28 +171,38 @@ const AddressSection = ({ provider, onUpdate }) => {
               <FiEdit />
             </Button>
           </div>
-          <div className="address-details">
-            <div className="address-item">
-              <span className="address-label">Calle:</span>
-              <span className="address-value">{provider?.address?.street}</span>
-            </div>
-            <div className="address-item">
-              <span className="address-label">Número:</span>
-              <span className="address-value">{provider?.address?.number}</span>
-            </div>
-            <div className="address-item">
-              <span className="address-label">Piso:</span>
-              <span className="address-value">{provider?.address?.floor}</span>
-            </div>
-            <div className="address-item">
-              <span className="address-label">Departamento:</span>
-              <span className="address-value">{provider?.address?.apartment}</span>
-            </div>
-            <div className="address-item">
-              <span className="address-label">Ciudad:</span>
-              <span className="address-value">{provider?.address?.city_detail?.name}</span>
-            </div>
-          </div>
+          <ListGroup variant="flush">
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Calle:</strong></Col>
+                <Col sm={9}>{currentProfile?.address?.street}</Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Número:</strong></Col>
+                <Col sm={9}>{currentProfile?.address?.number}</Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Piso:</strong></Col>
+                <Col sm={9}>{currentProfile?.address?.floor}</Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Departamento:</strong></Col>
+                <Col sm={9}>{currentProfile?.address?.apartment}</Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Ciudad:</strong></Col>
+                <Col sm={9}>{currentProfile?.address?.city_detail?.name}</Col>
+              </Row>
+            </ListGroup.Item>
+          </ListGroup>
         </Card.Body>
       </Card>
 

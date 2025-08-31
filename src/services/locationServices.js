@@ -32,12 +32,14 @@ export const getCitiesByDepartment = async (departmentId) => {
     }
 };
 
-export const getProviderArea = async (providerId) => {
+export const getProviderArea = async (providerId, signal) => {
     try {
-        const response = await api.get(`locations/cities-area/${providerId}/`);
+        const response = await api.get(`locations/cities-area/${providerId}/`, { signal });
         return response.data;
     } catch (error) {
-        console.error(`Error fetching service area for provider ${providerId}:`, error);
+        if (error.name !== 'CanceledError') {
+            console.error(`Error fetching service area for provider ${providerId}:`, error);
+        }
         throw error;
     }
 };

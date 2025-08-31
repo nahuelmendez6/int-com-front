@@ -169,41 +169,43 @@ export const ProviderProfilePage = () => {
         <p className="text-muted">{provider?.profession?.name}</p>
       </header>
 
-      <Row className="mb-4">
-        <Col>
+      <Card className="mb-4">
+        <Card.Body>
+          <Card.Title>Información Profesional</Card.Title>
           <ProfessionalInfoSection provider={provider} onUpdate={fetchProviderProfile} />
-        </Col>
-      </Row>
-      <Row className="mb-4">
-        <Col>
+        </Card.Body>
+      </Card>
+
+      <Card className="mb-4">
+        <Card.Body>
+          <Card.Title>Dirección</Card.Title>
           <AddressSection provider={provider} onUpdate={fetchProviderProfile} />
-        </Col>
-      </Row>
-      <Row className="mb-4">
-        <Col>
-          <Card>
-            <Card.Body>
-              <Card.Title>Datos de Contacto</Card.Title>
-              <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <Row>
-                    <Col sm={3}><strong>Email:</strong></Col>
-                    <Col sm={9}>{user.email}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col sm={3}><strong>Teléfono:</strong></Col>
-                    <Col sm={9}>{user.phone}</Col>
-                  </Row>
-                </ListGroup.Item>
-              </ListGroup>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row className="mb-4">
-        <Col>
+        </Card.Body>
+      </Card>
+
+      <Card className="mb-4">
+        <Card.Body>
+          <Card.Title>Datos de Contacto</Card.Title>
+          <ListGroup variant="flush">
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Email:</strong></Col>
+                <Col sm={9}>{user.email}</Col>
+              </Row>
+            </ListGroup.Item>
+            <ListGroup.Item>
+              <Row>
+                <Col sm={3}><strong>Teléfono:</strong></Col>
+                <Col sm={9}>{user.phone}</Col>
+              </Row>
+            </ListGroup.Item>
+          </ListGroup>
+        </Card.Body>
+      </Card>
+
+      <Card className="mb-4">
+        <Card.Body>
+          <Card.Title>Área de Servicio</Card.Title>
           {isEditingServiceArea ? (
             <ServiceAreaSection
               provider={provider}
@@ -217,8 +219,8 @@ export const ProviderProfilePage = () => {
               onUpdate={handleServiceAreaUpdate}
             />
           )}
-        </Col>
-      </Row>
+        </Card.Body>
+      </Card>
     </Container>
   );
 };

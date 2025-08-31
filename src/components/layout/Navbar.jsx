@@ -14,24 +14,35 @@ import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { checkProfileStatus } from '../../services/profileService';
 
+import logo from '../../assets/logo.png';
+
 const CustomNavbar = () => {
   const { logout, role, profile, token, isLoading } = useAuth();
   const navigate = useNavigate();
   const [profileIncomplete, setProfileIncomplete] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const fetchProfileStatus = async () => {
       if (role === 'provider' && token) {
         try {
-          const data = await checkProfileStatus(token);
+          const data = await checkProfileStatus(token, signal);
           setProfileIncomplete(!data.profile_complete);
         } catch (error) {
-          console.error('Error checking profile status:', error);
+          if (error.name !== 'CanceledError') {
+            console.error('Error checking profile status:', error);
+          }
         }
       }
     };
 
     if (!isLoading) fetchProfileStatus();
+
+    return () => {
+      controller.abort();
+    };
   }, [role, token, isLoading]);
 
   const handleLogout = () => {
@@ -43,7 +54,12 @@ const CustomNavbar = () => {
     <Navbar expand="md" fixed="top" style={{ backgroundColor: '#f5f5f5' }} className="align-items-center gap-3">
       <Container>
         <Navbar.Brand href="#">
-          <img width="30" height="30" className="d-inline-block align-top" alt="Logo" />
+          <img
+            src={logo}
+            className="d-inline-block align-top"
+            alt="Logo Integración Comunitaria"
+            style={{ height: "40px", width: "auto" }}
+          />
         </Navbar.Brand>
 
         <Form className="d-none d-md-flex ms-2">
