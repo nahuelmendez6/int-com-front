@@ -43,6 +43,16 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
         }
       }
     };
+    fetchOptions();
+
+    return () => {
+      controller.abort();
+    };
+  }, []); // Empty dependency array to run only once on mount
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
 
     const fetchProviderData = async () => {
       try {
@@ -61,7 +71,6 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
       }
     };
 
-    fetchOptions();
     if (token && !isLoading) {
       fetchProviderData();
     }
@@ -69,7 +78,7 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
     return () => {
       controller.abort();
     };
-  }, [token, isLoading]);
+  }, [token, isLoading]); // Dependencies for provider data fetching
 
   const handleChange = (e) => {
     const { name, value } = e.target;

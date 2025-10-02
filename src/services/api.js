@@ -20,7 +20,7 @@ api.interceptors.response.use(
             console.warn('Token inválido o expirado');
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
-            window.location.href = '/login';
+            window.location.href = '/';
     }
     return Promise.reject(error);
 }
