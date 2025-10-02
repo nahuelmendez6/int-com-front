@@ -11,6 +11,7 @@ const AvailabilityManager = () => {
   const { id_provider, role, isLoading: isAuthLoading } = useAuth();
   const [availability, setAvailability] = useState({});
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [slotToDelete, setSlotToDelete] = useState(null);
@@ -18,7 +19,8 @@ const AvailabilityManager = () => {
   const fetchAvailability = async () => {
     if (!id_provider || role !== 'provider') return;
     try {
-      setLoading(true);
+      // No longer setting main loading to true, to avoid UI flash
+      // setLoading(true);
       const data = await getProviderAvailability(id_provider);
       const availabilityMap = data.reduce((acc, item) => {
         const day = item.day_of_week;
@@ -30,7 +32,7 @@ const AvailabilityManager = () => {
     } catch (err) {
       setError('Error al cargar la disponibilidad.');
     } finally {
-      setLoading(false);
+      setLoading(false); // This is for the initial load
     }
   };
 
@@ -71,6 +73,7 @@ const AvailabilityManager = () => {
         return;
     }
 
+    setIsSubmitting(true);
     const payload = {
       id_provider: id_provider,
       day_of_week: day,
@@ -81,15 +84,15 @@ const AvailabilityManager = () => {
     try {
       setError(null);
       if (slot.id_availability) {
-        // Existing slot, so we edit (PATCH)
         await editProviderAvailability(slot.id_availability, payload);
       } else {
-        // New slot, so we create (POST)
         await updateProviderAvailability(payload);
       }
-      await fetchAvailability(); // Refetch to get a clean state
+      await fetchAvailability();
     } catch (err) {
       setError(`Error al guardar el horario. Verifique que los tiempos no se superpongan.`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -100,6 +103,7 @@ const AvailabilityManager = () => {
 
   const confirmDelete = async () => {
     if (!slotToDelete) return;
+    setIsSubmitting(true);
     try {
       await deleteProviderAvailability(slotToDelete);
       setShowModal(false);
@@ -108,6 +112,8 @@ const AvailabilityManager = () => {
     } catch (err) {
       setError('Error al eliminar el horario.');
       setShowModal(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -130,20 +136,22 @@ const AvailabilityManager = () => {
                 {availability[day] && availability[day].map((slot, index) => (
                   <Row key={slot.id_availability || `new-${index}`} className="align-items-center mb-2">
                     <Col md={4}>
-                      <Form.Control type="time" value={slot.start_time} onChange={e => handleTimeChange(day, index, 'start_time', e.target.value)} />
+                      <Form.Control type="time" value={slot.start_time} onChange={e => handleTimeChange(day, index, 'start_time', e.target.value)} disabled={isSubmitting} />
                     </Col>
                     <Col md={4}>
-                      <Form.Control type="time" value={slot.end_time} onChange={e => handleTimeChange(day, index, 'end_time', e.target.value)} />
+                      <Form.Control type="time" value={slot.end_time} onChange={e => handleTimeChange(day, index, 'end_time', e.target.value)} disabled={isSubmitting} />
                     </Col>
                     <Col md={2}>
-                      <Button variant="success" size="sm" onClick={() => handleSaveSlot(day, index)}>Guardar</Button>
+                      <Button variant="success" size="sm" onClick={() => handleSaveSlot(day, index)} disabled={isSubmitting}>
+                        {isSubmitting ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true"/> : 'Guardar'}
+                      </Button>
                     </Col>
                     <Col md={2}>
-                      {slot.id_availability && <Button variant="danger" size="sm" onClick={() => handleDeleteClick(slot.id_availability)}>Eliminar</Button>}
+                      {slot.id_availability && <Button variant="danger" size="sm" onClick={() => handleDeleteClick(slot.id_availability)} disabled={isSubmitting}>Eliminar</Button>}
                     </Col>
                   </Row>
                 ))}
-                <Button variant="primary" size="sm" className="mt-2" onClick={() => handleAddNewSlot(day)}>+ Añadir horario</Button>
+                <Button variant="primary" size="sm" className="mt-2" onClick={() => handleAddNewSlot(day)} disabled={isSubmitting}>+ Añadir horario</Button>
               </ListGroup.Item>
             ))}
           </ListGroup>
