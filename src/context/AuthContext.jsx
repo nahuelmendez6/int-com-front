@@ -24,15 +24,20 @@ export const AuthProvider = ({ children }) => {
         const storedToken = localStorage.getItem('token');
         const storedRole = localStorage.getItem('role');
         const storedUserId = localStorage.getItem('userId');
+        console.log('AuthContext: Initializing...');
+        console.log('AuthContext: Stored Token:', storedToken ? 'Present' : 'Missing');
+        console.log('AuthContext: Stored Role:', storedRole);
+        console.log('AuthContext: Stored UserId:', storedUserId);
 
         if (storedToken && storedRole && storedUserId) {
           setToken(storedToken);
           setRole(storedRole);
           setUserId(storedUserId);
           axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
-
+          console.log('AuthContext: Token found, fetching profile data...');
           await fetchProfileData(storedToken, storedRole, signal);
         }
+        console.log('AuthContext: Setting isLoading to false.');
         setIsLoading(false);
     }
 
@@ -46,13 +51,19 @@ export const AuthProvider = ({ children }) => {
   const fetchProfileData = async (token, role, signal) => {
     try {
       const profileData = await getProfile(token, signal);
+      console.log('AuthContext: Fetched base profile data:', profileData);
       setProfile(profileData);
 
       if (role === 'provider') {
         const providerData = await getProviderProfileData(token, signal);
+        console.log('AuthContext: Fetched provider profile data:', providerData);
+        if (providerData.categories && providerData.categories.length > 0) {
+            console.log('AuthContext: First provider category object:', providerData.categories[0]);
+        }
         setProviderProfile(providerData);
       } else if (role === 'customer') {
         const customerData = await getCustomerProfileData(token, signal);
+        console.log('AuthContext: Fetched customer profile data:', customerData);
         setCustomerProfile(customerData);
       }
     } catch (err) {
