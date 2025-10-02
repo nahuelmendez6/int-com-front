@@ -13,6 +13,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProviderProfilePage from './pages/ProviderProfilePage';
 import CustomerProfile from './pages/CustomerProfile.jsx';
+import AvailabilityPage from './pages/AvailabilityPage.jsx';
 
 axios.interceptors.response.use(
   response => response,
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
           {
             path: "/provider-profile",
             element: <ProviderProfilePage />,
+          },
+          {
+            path: "/availability",
+            element: <AvailabilityPage />,
           },
         ],
       },

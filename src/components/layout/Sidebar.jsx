@@ -110,7 +110,8 @@ const Sidebar = () => {
         {role === 'provider' && (
           <>
             <ListGroup.Item as={NavLink} to="/provider-profile">Mi Perfil</ListGroup.Item>
-            <ListGroup.Item as={NavLink} to="/portfolio">Portfolio</ListGroup.Item>
+            <ListGroup.Item as={NavLink} to="/availability">Gestionar Disponibilidad</ListGroup.Item>
+            <ListGroup.Item as={NavLink} to="/provider-portfolio">Portfolio</ListGroup.Item>
           </>
         )}
 

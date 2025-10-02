@@ -57,7 +57,7 @@ export const createAddress = async (addressData) => {
         console.log('Payload for createAddress:', payload);
         const response = await api.post(`locations/addresses/`, payload);
         return response.data;
-0    } catch (error) {
+    } catch (error) {
         console.error('Error creating address:', error);
         throw error.response?.data || { detail: 'Error al crear la dirección' };
     }

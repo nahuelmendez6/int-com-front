@@ -20,19 +20,23 @@ export const AuthProvider = ({ children }) => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const storedToken = localStorage.getItem('token');
-    const storedRole = localStorage.getItem('role');
-    const storedUserId = localStorage.getItem('userId');
+    const initializeAuth = async () => {
+        const storedToken = localStorage.getItem('token');
+        const storedRole = localStorage.getItem('role');
+        const storedUserId = localStorage.getItem('userId');
 
-    if (storedToken && storedRole && storedUserId) {
-      setToken(storedToken);
-      setRole(storedRole);
-      setUserId(storedUserId);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+        if (storedToken && storedRole && storedUserId) {
+          setToken(storedToken);
+          setRole(storedRole);
+          setUserId(storedUserId);
+          axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
 
-      fetchProfileData(storedToken, storedRole, signal);
+          await fetchProfileData(storedToken, storedRole, signal);
+        }
+        setIsLoading(false);
     }
-    setIsLoading(false);
+
+    initializeAuth();
 
     return () => {
       controller.abort();
@@ -109,10 +113,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+
   return (
     <AuthContext.Provider value={{
       profile,
       providerProfile,
+      id_provider: providerProfile?.id_provider,
       customerProfile,
       token,
       role,
