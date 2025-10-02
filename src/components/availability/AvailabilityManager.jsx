@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Card, ListGroup, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
-import { getProviderAvailability, updateProviderAvailability, deleteProviderAvailability } from '../../services/availabilityService';
+import { getProviderAvailability, updateProviderAvailability, deleteProviderAvailability, editProviderAvailability } from '../../services/availabilityService';
 import ConfirmationModal from '../common/ConfirmationModal';
 
 const daysMap = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 0: 'Domingo' };
@@ -81,11 +81,13 @@ const AvailabilityManager = () => {
     try {
       setError(null);
       if (slot.id_availability) {
-          setError("Para modificar un horario, por favor, elimínelo y créelo de nuevo.");
-          return;
+        // Existing slot, so we edit (PATCH)
+        await editProviderAvailability(slot.id_availability, payload);
+      } else {
+        // New slot, so we create (POST)
+        await updateProviderAvailability(payload);
       }
-      await updateProviderAvailability(payload);
-      await fetchAvailability();
+      await fetchAvailability(); // Refetch to get a clean state
     } catch (err) {
       setError(`Error al guardar el horario. Verifique que los tiempos no se superpongan.`);
     }
@@ -134,7 +136,7 @@ const AvailabilityManager = () => {
                       <Form.Control type="time" value={slot.end_time} onChange={e => handleTimeChange(day, index, 'end_time', e.target.value)} />
                     </Col>
                     <Col md={2}>
-                      <Button variant="success" size="sm" onClick={() => handleSaveSlot(day, index)} disabled={!!slot.id_availability}>Guardar</Button>
+                      <Button variant="success" size="sm" onClick={() => handleSaveSlot(day, index)}>Guardar</Button>
                     </Col>
                     <Col md={2}>
                       {slot.id_availability && <Button variant="danger" size="sm" onClick={() => handleDeleteClick(slot.id_availability)}>Eliminar</Button>}

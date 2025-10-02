@@ -28,10 +28,20 @@ export const updateProviderAvailability = async (availabilityData) => {
 
 export const deleteProviderAvailability = async (availabilityId) => {
   try {
-    const response = await api.delete(`/availability/delete/${availabilityId}/`);
+    const response = await api.delete(`/availability/edit/${availabilityId}/`);
     return response.data;
   } catch (error) {
     console.error('Error deleting provider availability:', error.response?.data || error);
+    throw error;
+  }
+};
+
+export const editProviderAvailability = async (availabilityId, availabilityData) => {
+  try {
+    const response = await api.patch(`/availability/edit/${availabilityId}/`, availabilityData);
+    return response.data;
+  } catch (error) {
+    console.error('Error editing provider availability:', error.response?.data || error);
     throw error;
   }
 };
