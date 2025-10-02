@@ -109,7 +109,9 @@ const Sidebar = () => {
       <ListGroup variant="flush">
         {role === 'provider' && (
           <>
-            <ListGroup.Item as={NavLink} to="/provider-profile">Mi Perfil</ListGroup.Item>
+            {/* <ListGroup.Item as={NavLink} to="/provider-profile">Mi Perfil</ListGroup.Item> */}
+            <ListGroup.Item as={NavLink} to="/provider-profile/main">Perfil</ListGroup.Item>
+            <ListGroup.Item as={NavLink} to="/provider-profile/location">Ubicación</ListGroup.Item>
             <ListGroup.Item as={NavLink} to="/availability">Gestionar Disponibilidad</ListGroup.Item>
             <ListGroup.Item as={NavLink} to="/provider-portfolio">Portfolio</ListGroup.Item>
           </>

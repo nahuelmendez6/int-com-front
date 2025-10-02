@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import './index.css';
 import App from './App.jsx';
@@ -14,6 +14,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ProviderProfilePage from './pages/ProviderProfilePage';
 import CustomerProfile from './pages/CustomerProfile.jsx';
 import AvailabilityPage from './pages/AvailabilityPage.jsx';
+import ProfileSectionPage from './pages/profile/ProfileSectionPage.jsx';
+import LocationSectionPage from './pages/profile/LocationSectionPage.jsx';
 
 axios.interceptors.response.use(
   response => response,
@@ -79,6 +81,11 @@ const router = createBrowserRouter([
           {
             path: "/provider-profile",
             element: <ProviderProfilePage />,
+            children: [
+              { index: true, element: <Navigate to="main" replace /> },
+              { path: "main", element: <ProfileSectionPage /> },
+              { path: "location", element: <LocationSectionPage /> },
+            ]
           },
           {
             path: "/availability",

@@ -47,6 +47,7 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
     const fetchProviderData = async () => {
       try {
         const providerData = await getProviderProfileData(token, signal);
+        console.log('Provider Data Categories:', providerData.categories);
         setFormData({
           profession: providerData.profession?.id_profession || '',
           type_provider: providerData.type_provider?.id_type_provider || '',
@@ -77,8 +78,15 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const payload = {
+      ...formData,
+      profession: formData.profession ? parseInt(formData.profession, 10) : null,
+      type_provider: formData.type_provider ? parseInt(formData.type_provider, 10) : null,
+    };
+
     try {
-      await updateProvider(token, formData);
+      await updateProvider(token, payload);
       onUpdate();
       handleClose();
     } catch (error) {
@@ -131,7 +139,7 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
         </Card.Body>
       </Card>
 
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal show={showModal} onHide={handleClose} size="xl">
         <Modal.Header closeButton>
           <Modal.Title>Editar Información Profesional</Modal.Title>
         </Modal.Header>
