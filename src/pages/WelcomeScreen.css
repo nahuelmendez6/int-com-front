@@ -12,17 +12,31 @@
 .hero-section {
   display: flex;
   align-items: center;
+  justify-content: center; /* Center the content horizontally */
 }
 
 .hero-content {
   flex: 1;
-  padding-right: 0;
+  padding-right: 20px; /* Reduced padding to bring it closer to the image */
+  margin-left: auto; /* Center the form within its column */
+  margin-right: auto; /* Center the form within its column */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center items vertically within hero-content */
 }
 
 .hero-content h1 {
   font-size: 3.5rem;
   font-weight: 200;
   color: rgba(0, 0, 0, 0.9);
+}
+
+.welcome-title {
+  font-size: 2.5rem; /* Larger font size */
+  font-weight: 700; /* Bolder */
+  color: #3b82f6; /* A distinct color, e.g., primary blue */
+  margin-bottom: 1.5rem; /* Add some space below the title */
+  text-align: center;
 }
 
 .hero-image {
@@ -34,42 +48,4 @@
   height: auto;
 }
 
-.login-form {
-  margin-top: 2rem;
-}
 
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.btn-google {
-  background-color: #4285f4;
-  color: white;
-  border: none;
-}
-
-.btn-google:hover {
-  background-color: #357ae8;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  margin: 1rem 0;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #ccc;
-}
-
-.divider:not(:empty)::before {
-  margin-right: .25em;
-}
-
-.divider:not(:empty)::after {
-  margin-left: .25em;
-}
