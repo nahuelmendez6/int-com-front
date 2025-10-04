@@ -20,7 +20,7 @@ const CustomerRegistrationForm = () => {
     <div className="registration-page">
       <header className="registration-header">
         {/* <a href="/" className="logo">Integracion Comunitaria</a> */}
-        <h1 className="subtitle">Saca el máximo partido a tu vida profesional</h1>
+        {/* <h1 className="subtitle">Saca el máximo partido a tu vida profesional</h1> */}
       </header>
       <div className="registration-card">
         <Form onSubmit={handleSubmit} noValidate>
