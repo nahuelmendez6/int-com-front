@@ -9,9 +9,11 @@ import {
   Image,
   Badge,
 } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
+
 import { FiMessageSquare, FiBell } from 'react-icons/fi'; 
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { checkProfileStatus } from '../../services/profileService';
 
 import logo from '../../assets/logo.png';
@@ -19,6 +21,8 @@ import logo from '../../assets/logo.png';
 const CustomNavbar = () => {
   const { logout, role, profile, token, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { pathname } = location;
   const [profileIncomplete, setProfileIncomplete] = useState(false);
 
   useEffect(() => {
@@ -69,24 +73,41 @@ const CustomNavbar = () => {
         <Navbar.Toggle aria-controls="main-navbar" />
 
         <Navbar.Collapse id="main-navbar" className="justify-content-end">
-          <Nav className="align-items-center gap-3">
+          <Nav className="align-items-center gap-3" activeKey={pathname}>
             {role === 'customer' && (
               <>
-                <Nav.Link href="#" className="text-dark">Mis Servicios</Nav.Link>
-                <Nav.Link href="#" className="text-dark">Buscar Proveedores</Nav.Link>
-              </> 
+                <NavLink
+                  to="/petitions"
+                  className={({ isActive }) =>
+                    isActive
+                      ? "nav-link fw-bold text-dark"
+                      : "nav-link text-dark"
+                  }
+                  style={({ isActive }) =>
+                    isActive
+                      ? { backgroundColor: "#0A2357", borderRadius: "6px", padding: "6px 12px" } // gris plateado
+                      : {}
+                  }
+                >
+                  Peticiones
+                </NavLink>
+
+
+                <Nav.Link as={NavLink} to="#" eventKey="/services" className="text-dark">Mis Servicios</Nav.Link>
+                <Nav.Link as={NavLink} to="#" eventKey="/providers" className="text-dark">Buscar Proveedores</Nav.Link>
+              </>
             )}
             {role === 'provider' && (
               <>
-                <Nav.Link href="#" className="text-dark">Peticiones</Nav.Link>
-                <Nav.Link href="#" className="text-dark">Mis Postulaciones</Nav.Link>
-                <Nav.Link href="#" className="text-dark">Mis Servicios Ofrecidos</Nav.Link>
+                <Nav.Link as={NavLink} to="#" eventKey="/petitions" className="text-dark">Peticiones</Nav.Link>
+                <Nav.Link as={NavLink} to="#" eventKey="/applications" className="text-dark">Mis Postulaciones</Nav.Link>
+                <Nav.Link as={NavLink} to="#" eventKey="/offered-services" className="text-dark">Mis Servicios Ofrecidos</Nav.Link>
               </>
             )}
             {role === 'admin' && (
               <>
-                <Nav.Link href="#" className="text-dark">Gestión de Usuarios</Nav.Link>
-                <Nav.Link href="#" className="text-dark">Reportes</Nav.Link>
+                <Nav.Link as={NavLink} to="#" eventKey="/user-management" className="text-dark">Gestión de Usuarios</Nav.Link>
+                <Nav.Link as={NavLink} to="#" eventKey="/reports" className="text-dark">Reportes</Nav.Link>
               </>
             )}
 

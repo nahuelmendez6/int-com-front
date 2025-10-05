@@ -4,7 +4,7 @@ import LeftSidebar from './Sidebar';
 import RightSidebar from './RightSidebar';
 import './Layout.css';
 
-const Layout = ({ children }) => {
+const Layout = ({ children, centered = true }) => {
   return (
     <div className="app-container">
       <AppNavbar />
@@ -14,12 +14,12 @@ const Layout = ({ children }) => {
             <div className="col-md-3 col-lg-2 d-none d-md-block left-sidebar-container">
               <LeftSidebar />
             </div>
-            <main role="main" className="col-md-9 col-lg-8 central-content-container">
+            <main role="main" className={`col-md-9 col-lg-8 ${centered ? 'central-content-container' : ''}`}>
               {children}
             </main>
-            <div className="col-lg-2 d-none d-lg-block right-sidebar-container">
+            {/* <div className="col-lg-2 d-none d-lg-block right-sidebar-container">
               <RightSidebar />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

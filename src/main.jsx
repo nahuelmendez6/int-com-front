@@ -16,6 +16,7 @@ import CustomerProfile from './pages/CustomerProfile.jsx';
 import AvailabilityPage from './pages/AvailabilityPage.jsx';
 import ProfileSectionPage from './pages/profile/ProfileSectionPage.jsx';
 import LocationSectionPage from './pages/profile/LocationSectionPage.jsx';
+import PetitionsPage from './pages/PetitionsPage';
 
 axios.interceptors.response.use(
   response => response,
@@ -68,6 +69,10 @@ const router = createBrowserRouter([
           {
             path: "/customer-profile",
             element: <CustomerProfile />,
+          },
+          {
+            path: "/petitions",
+            element: <PetitionsPage />,
           }
         ],
       },
