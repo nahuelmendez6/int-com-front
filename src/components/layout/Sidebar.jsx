@@ -74,21 +74,9 @@ const Sidebar = () => {
 
 
   return (
-    <div
-      style={{
-        width: '250px',
-        height: '100vh',
-        position: 'fixed',
-        top: '56px', // altura del navbar
-        left: 0,
-        backgroundColor: '#f3f2ef',
-        overflowY: 'auto',
-        borderRight: '1px solid #ddd',
-        padding: '1rem',
-      }}
-    >
+    <div>
       <Card className="mb-4">
-        <Card.Body className="text-center">
+        <Card.Body>
           <Image
             src={user?.profile_image || "https://via.placeholder.com/80"}
             roundedCircle

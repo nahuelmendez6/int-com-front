@@ -16,6 +16,10 @@
   --card-border: #b3d3f5;
 }
 
+* {
+  margin:0;
+}
+
 body {
   background: var(--main-bg);
   font-family: 'Segoe UI', Arial, sans-serif;
