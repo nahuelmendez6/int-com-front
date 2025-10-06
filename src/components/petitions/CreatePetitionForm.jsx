@@ -73,11 +73,12 @@ const CreatePetitionForm = ({ show, onHide, petitionToEdit, customerProfile }) =
 
   const handleCategoryChange = (e) => {
     const { value, checked } = e.target;
+    const categoryId = parseInt(value, 10);
     let selectedCategories = [...formData.categories];
     if (checked) {
-      selectedCategories.push({ id_category: value });
+      selectedCategories.push({ id_category: categoryId });
     } else {
-      selectedCategories = selectedCategories.filter(cat => cat.id_category !== value);
+      selectedCategories = selectedCategories.filter(cat => cat.id_category !== categoryId);
     }
     setFormData({ ...formData, categories: selectedCategories });
   };
