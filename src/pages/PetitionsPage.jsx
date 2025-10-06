@@ -18,7 +18,7 @@ const PetitionsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingReference, setIsLoadingReference] = useState(false);
   const [error, setError] = useState(null);
-  const { profile } = useAuth();
+  const { profile, customerProfile } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -178,7 +178,7 @@ const PetitionsPage = () => {
         </button>
       </div>
 
-      {isModalOpen && <CreatePetitionForm show={isModalOpen} onHide={handleCloseModal} petitionToEdit={editingPetition} />}
+      {isModalOpen && <CreatePetitionForm show={isModalOpen} onHide={handleCloseModal} petitionToEdit={editingPetition} customerProfile={customerProfile} />}
 
       <ConfirmationModal
         show={showDeleteModal}

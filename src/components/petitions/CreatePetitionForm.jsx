@@ -4,7 +4,7 @@ import { getPetitionTypes, createPetition, updatePetition } from '../../services
 import { getProfessions, getCategories, getTypeProviders } from '../../services/profileService';
 
 
-const CreatePetitionForm = ({ show, onHide, petitionToEdit }) => {
+const CreatePetitionForm = ({ show, onHide, petitionToEdit, customerProfile }) => {
   const [petitionTypes, setPetitionTypes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [professions, setProfessions] = useState([]);
@@ -33,6 +33,7 @@ const CreatePetitionForm = ({ show, onHide, petitionToEdit }) => {
       });
     } else {
       setFormData({
+        
         description: '',
         date_since: '',
         date_until: '',
@@ -89,6 +90,9 @@ const CreatePetitionForm = ({ show, onHide, petitionToEdit }) => {
     e.preventDefault();
     
     const petitionFormData = new FormData();
+
+    petitionFormData.append('id_customer', customerProfile.id_customer);
+    petitionFormData.append('id_state', 1);
 
     // Append form data
     Object.keys(formData).forEach(key => {
