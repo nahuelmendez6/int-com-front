@@ -49,3 +49,23 @@ export const getPetitions = async () => {
     throw error;
   }
 };
+
+export const getPetition = async (id) => {
+  try {
+    const response = await api.get(`/petitions/${id}/`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching petition ${id}:`, error);
+    throw error;
+  }
+};
+
+export const updatePetition = async (id, petitionData) => {
+  try {
+    const response = await api.patch(`/petitions/${id}/`, petitionData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating petition ${id}:`, error.response?.data);
+    throw error;
+  }
+};

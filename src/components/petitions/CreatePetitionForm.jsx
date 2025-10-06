@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { getPetitionTypes, createPetition } from '../../services/petitionService';
+import { getPetitionTypes, createPetition, updatePetition } from '../../services/petitionService';
 import { getProfessions, getCategories, getTypeProviders } from '../../services/profileService';
 
 
-const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
+const CreatePetitionForm = ({ show, onHide, petitionToEdit }) => {
   const [petitionTypes, setPetitionTypes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [professions, setProfessions] = useState([]);
@@ -19,6 +19,30 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
     id_profession: '',
     id_type_provider: '',
   });
+
+  useEffect(() => {
+    if (petitionToEdit) {
+      setFormData({
+        description: petitionToEdit.description || '',
+        date_since: petitionToEdit.date_since || '',
+        date_until: petitionToEdit.date_until || '',
+        id_type_petition: petitionToEdit.id_type_petition || '',
+        categories: petitionToEdit.categories.map(c => ({ id_category: c.id_category })) || [],
+        id_profession: petitionToEdit.id_profession || '',
+        id_type_provider: petitionToEdit.id_type_provider || '',
+      });
+    } else {
+      setFormData({
+        description: '',
+        date_since: '',
+        date_until: '',
+        id_type_petition: '',
+        categories: [],
+        id_profession: '',
+        id_type_provider: '',
+      });
+    }
+  }, [petitionToEdit]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -61,68 +85,39 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
     setAttachments([...e.target.files]);
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-    
-  //   const petitionFormData = new FormData();
-
-  //   petitionFormData.append("id_customer", customerProfile.id_customer); // desde el profile del contexto
-  //   petitionFormData.append("id_state", 1);
-
-
-  //   // Append form data
-  //   Object.keys(formData).forEach(key => {
-  //     if (key === 'categories') {
-  //       petitionFormData.append(key, JSON.stringify(formData[key]));
-  //     } else {
-  //       petitionFormData.append(key, formData[key]);
-  //     }
-  //   });
-
-  //   // Append attachments
-  //   attachments.forEach(file => {
-  //     petitionFormData.append('attachments', file);
-  //   });
-
-  //   try {
-  //     await createPetition(petitionFormData);
-  //     onHide();
-  //   } catch (error) {
-  //     console.error('Error creating petition:', error);
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     const petitionFormData = new FormData();
 
-    // Datos obligatorios
-    petitionFormData.append("id_customer", customerProfile.id_customer); // desde el profile
-    petitionFormData.append("id_state", 1);
-
-    // Append el resto de los campos del form
+    // Append form data
     Object.keys(formData).forEach(key => {
-      if (key !== 'categories') {
+      if (key === 'categories') {
+        // Handled separately
+      } else {
         petitionFormData.append(key, formData[key]);
       }
     });
 
-    // Append cada categoría individualmente
+    // Append each category id
     formData.categories.forEach(cat => {
-      petitionFormData.append('categories', cat.id_category); // envía solo el número
+      petitionFormData.append('categories', cat.id_category);
     });
 
-    // Append adjuntos
+    // Append attachments
     attachments.forEach(file => {
       petitionFormData.append('attachments', file);
     });
 
     try {
-      await createPetition(petitionFormData);
+      if (petitionToEdit) {
+        await updatePetition(petitionToEdit.id_petition, petitionFormData);
+      } else {
+        await createPetition(petitionFormData);
+      }
       onHide();
     } catch (error) {
-      console.error('Error creating petition:', error);
+      console.error('Error saving petition:', error);
     }
   };
 
@@ -130,7 +125,7 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
   return (
     <Modal show={show} onHide={onHide} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title>Crear Petición</Modal.Title>
+        <Modal.Title>{petitionToEdit ? 'Editar Petición' : 'Crear Petición'}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
@@ -138,13 +133,13 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Descripción</Form.Label>
-                <Form.Control as="textarea" name="description" onChange={handleChange} />
+                <Form.Control as="textarea" name="description" value={formData.description} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Tipo de Petición</Form.Label>
-                <Form.Select name="id_type_petition" onChange={handleChange}>
+                <Form.Select name="id_type_petition" value={formData.id_type_petition} onChange={handleChange}>
                   <option value="">Seleccione un tipo</option>
                   {petitionTypes.map(type => (
                     <option key={type.id_type_petition} value={type.id_type_petition}>{type.type_petition}</option>
@@ -153,7 +148,7 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Profesión</Form.Label>
-                <Form.Select name="id_profession" onChange={handleChange}>
+                <Form.Select name="id_profession" value={formData.id_profession} onChange={handleChange}>
                   <option value="">Seleccione una profesión</option>
                   {professions.map(profession => (
                     <option key={profession.id_profession} value={profession.id_profession}>{profession.name}</option>
@@ -162,7 +157,7 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Tipo de Proveedor</Form.Label>
-                <Form.Select name="id_type_provider" onChange={handleChange}>
+                <Form.Select name="id_type_provider" value={formData.id_type_provider} onChange={handleChange}>
                   <option value="">Seleccione un tipo de proveedor</option>
                   {providerTypes.map(providerType => (
                     <option key={providerType.id_type_provider} value={providerType.id_type_provider}>{providerType.name}</option>
@@ -175,13 +170,13 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Desde</Form.Label>
-                <Form.Control type="date" name="date_since" onChange={handleChange} />
+                <Form.Control type="date" name="date_since" value={formData.date_since} onChange={handleChange} />
               </Form.Group>
             </Col>
             <Col md={6}>
               <Form.Group className="mb-3">
                 <Form.Label>Hasta</Form.Label>
-                <Form.Control type="date" name="date_until" onChange={handleChange} />
+                <Form.Control type="date" name="date_until" value={formData.date_until} onChange={handleChange} />
               </Form.Group>
             </Col>
           </Row>
@@ -194,6 +189,7 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
                     type="checkbox"
                     label={cat.name}
                     value={cat.id_category}
+                    checked={formData.categories.some(c => c.id_category === cat.id_category)}
                     onChange={handleCategoryChange}
                   />
                 </Col>
@@ -208,7 +204,7 @@ const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>Cancelar</Button>
-        <Button variant="primary" onClick={handleSubmit}>Crear</Button>
+        <Button variant="primary" onClick={handleSubmit}>{petitionToEdit ? 'Guardar Cambios' : 'Crear'}</Button>
       </Modal.Footer>
     </Modal>
   );

@@ -52,3 +52,97 @@
 .create-petition-btn:active span::before {
   background: #2751cd;
 }
+
+.petitions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.petition-details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.petition-card-modern {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.petition-card-modern:hover {
+  transform: translateY(-5px);
+}
+
+.card-header-modern {
+  padding: 16px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header-modern h5 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.petition-actions .btn-edit,
+.petition-actions .btn-delete {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-edit {
+  color: #007bff;
+}
+
+.btn-edit:hover {
+  background-color: #e7f3ff;
+}
+
+.btn-delete {
+  color: #dc3545;
+  margin-left: 8px;
+}
+
+.btn-delete:hover {
+  background-color: #f8d7da;
+}
+
+.card-body-modern {
+  padding: 16px;
+}
+
+.card-body-modern p {
+  margin-bottom: 8px;
+}
+
+.attachments-section {
+  margin-top: 16px;
+}
+
+.attachments-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.attachments-section a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.attachments-section a:hover {
+  text-decoration: underline;
+}
