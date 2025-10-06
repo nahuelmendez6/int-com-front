@@ -39,3 +39,6 @@ export const verifyCode = async (code) => {
         throw error.response?.data || { detail: 'Error al verificar el código' };
     }
 }
+
+// Funciones de refresh y validación removidas temporalmente
+// hasta que se implementen en el backend

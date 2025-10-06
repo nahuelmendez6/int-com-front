@@ -1,7 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
-import axios from 'axios';
 import './index.css';
 import App from './App.jsx';
 import WelcomeScreen from './pages/WelcomeScreen';
@@ -17,17 +16,6 @@ import AvailabilityPage from './pages/AvailabilityPage.jsx';
 import ProfileSectionPage from './pages/profile/ProfileSectionPage.jsx';
 import LocationSectionPage from './pages/profile/LocationSectionPage.jsx';
 import PetitionsPage from './pages/PetitionsPage';
-
-axios.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem('token');
-      window.location = '/';
-    }
-    return Promise.reject(error);
-  }
-);
 
 const router = createBrowserRouter([
   {

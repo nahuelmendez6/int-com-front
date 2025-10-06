@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios'; // 🔹 Importar axios
 import { login as authLogin } from '../services/authService'; // 🔹 Función de login
 import { getProfile, getProviderProfileData, getCustomerProfileData,updateProfileImage as updateProfileImageService } from '../services/profileService'; // 🔹 Funciones de perfil
@@ -48,21 +48,32 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const fetchProfileData = async (token, role, signal) => {
+  const fetchProfileData = useCallback(async (token, role, signal) => {
     try {
-      const profileData = await getProfile(token, signal);
+      // Hacer llamadas en paralelo para mejor rendimiento
+      const promises = [getProfile(token, signal)];
+      
+      if (role === 'provider') {
+        promises.push(getProviderProfileData(token, signal));
+      } else if (role === 'customer') {
+        promises.push(getCustomerProfileData(token, signal));
+      }
+
+      const results = await Promise.all(promises);
+      const profileData = results[0];
+      
       console.log('AuthContext: Fetched base profile data:', profileData);
       setProfile(profileData);
 
-      if (role === 'provider') {
-        const providerData = await getProviderProfileData(token, signal);
+      if (role === 'provider' && results[1]) {
+        const providerData = results[1];
         console.log('AuthContext: Fetched provider profile data:', providerData);
         if (providerData.categories && providerData.categories.length > 0) {
             console.log('AuthContext: First provider category object:', providerData.categories[0]);
         }
         setProviderProfile(providerData);
-      } else if (role === 'customer') {
-        const customerData = await getCustomerProfileData(token, signal);
+      } else if (role === 'customer' && results[1]) {
+        const customerData = results[1];
         console.log('AuthContext: Fetched customer profile data:', customerData);
         setCustomerProfile(customerData);
       }
@@ -71,7 +82,7 @@ export const AuthProvider = ({ children }) => {
         console.error("Error fetching profile data:", err);
       }
     }
-  };
+  }, []);
 
   const login = async (credentials) => {
     try {

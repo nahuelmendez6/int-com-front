@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Modal, Card, ListGroup, Badge, Row, Col } from 'react-bootstrap';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Button, Modal, Card, ListGroup, Badge, Row, Col, Spinner } from 'react-bootstrap';
 import { FiEdit } from 'react-icons/fi';
 import { getProfessions, getCategories, getTypeProviders, getProviderProfileData, updateProvider } from '../../services/profileService';
 import { useAuth } from '../../context/AuthContext';
@@ -18,37 +18,51 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
   const [categories, setCategories] = useState([]);
   const [typeProviders, setTypeProviders] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [error, setError] = useState(null);
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
-  useEffect(() => {
+  const fetchOptions = useCallback(async () => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const fetchOptions = async () => {
-      try {
-        const professionsData = await getProfessions(signal);
-        setProfessions(professionsData);
-        console.log('Professions data:', professionsData);
-        const categoriesData = await getCategories(signal);
-        console.log('Categories data:', categoriesData);
-        setCategories(categoriesData);
-        const typeProvidersData = await getTypeProviders(signal);
-        console.log('Type Providers data:', typeProvidersData);
-        setTypeProviders(typeProvidersData);
-      } catch (error) {
-        if (error.name !== 'CanceledError') {
-          console.error('Error al obtener las opciones:', error);
-        }
+    try {
+      setIsLoadingData(true);
+      setError(null);
+      
+      // Hacer todas las llamadas en paralelo para mejor rendimiento
+      const [professionsData, categoriesData, typeProvidersData] = await Promise.all([
+        getProfessions(signal),
+        getCategories(),
+        getTypeProviders(signal)
+      ]);
+      
+      setProfessions(professionsData);
+      setCategories(categoriesData);
+      setTypeProviders(typeProvidersData);
+      
+      console.log('Professions data:', professionsData);
+      console.log('Categories data:', categoriesData);
+      console.log('Type Providers data:', typeProvidersData);
+    } catch (error) {
+      if (error.name !== 'CanceledError') {
+        console.error('Error al obtener las opciones:', error);
+        setError('Error al cargar los datos. Por favor, intenta de nuevo.');
       }
-    };
-    fetchOptions();
+    } finally {
+      setIsLoadingData(false);
+    }
 
     return () => {
       controller.abort();
     };
-  }, []); // Empty dependency array to run only once on mount
+  }, []);
+
+  useEffect(() => {
+    fetchOptions();
+  }, [fetchOptions]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -80,12 +94,12 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
     };
   }, [token, isLoading]); // Dependencies for provider data fetching
 
-  const handleChange = (e) => {
+  const handleChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
 
     const payload = {
@@ -101,7 +115,66 @@ const ProfessionalInfoSection = ({ provider, onUpdate }) => {
     } catch (error) {
       console.error('Error updating provider data:', error);
     }
-  };
+  }, [formData, token, onUpdate]);
+
+  // Memoizar las funciones de búsqueda
+  const getProfessionName = useCallback((id) => {
+    const profession = professions.find(p => p.id_profession === id);
+    return profession ? profession.name : 'N/A';
+  }, [professions]);
+
+  const getCategoryNames = useCallback((categoryIds) => {
+    if (!categoryIds || categoryIds.length === 0) return 'N/A';
+    return categoryIds.map(catId => {
+      const category = categories.find(c => c.id_category === catId);
+      return category ? category.name : 'N/A';
+    }).join(', ');
+  }, [categories]);
+
+  const getProviderTypeName = useCallback((id) => {
+    const providerType = typeProviders.find(pt => pt.id_type_provider === id);
+    return providerType ? providerType.name : 'N/A';
+  }, [typeProviders]);
+
+  // Mostrar loading state
+  if (isLoadingData) {
+    return (
+      <div className="profile-section">
+        <Card>
+          <Card.Body>
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+              <div className="text-center">
+                <Spinner animation="border" role="status">
+                  <span className="visually-hidden">Cargando...</span>
+                </Spinner>
+                <p className="mt-3">Cargando información profesional...</p>
+              </div>
+            </div>
+          </Card.Body>
+        </Card>
+      </div>
+    );
+  }
+
+  // Mostrar error state
+  if (error) {
+    return (
+      <div className="profile-section">
+        <Card>
+          <Card.Body>
+            <div className="alert alert-danger" role="alert">
+              <h4 className="alert-heading">Error</h4>
+              <p>{error}</p>
+              <hr />
+              <button className="btn btn-outline-danger" onClick={fetchOptions}>
+                Reintentar
+              </button>
+            </div>
+          </Card.Body>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-section">

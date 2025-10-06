@@ -1,4 +1,6 @@
 import api from './api';
+import cacheService from './cacheService';
+import { retryRequest } from './retryService';
 
 export const createPetition = async (petitionData) => {
   try {
@@ -41,13 +43,18 @@ export const getPetitionsByCustomer = async (customerId) => {
 };
 
 export const getPetitions = async () => {
-  try {
-    const response = await api.get('/petitions/');
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching petitions:', error);
-    throw error;
-  }
+  const cacheKey = cacheService.generateKey('petitions');
+  
+  return cacheService.getOrSet(
+    cacheKey,
+    async () => {
+      return retryRequest(async () => {
+        const response = await api.get('/petitions/');
+        return response.data;
+      }, 3, 1000);
+    },
+    2 * 60 * 1000 // Cache por 2 minutos
+  );
 };
 
 export const getPetition = async (id) => {

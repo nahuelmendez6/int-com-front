@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import cacheService from './cacheService';
 import api from './api';
 
 const API_BASE_URL = 'http://127.0.0.1:8000/profiles';
@@ -17,18 +17,42 @@ export const checkProfileStatus = async (token, signal) => {
 }
 
 export const getProfessions = async (signal) => {
-    const response = await api.get(`profiles/professions`, { signal });
-    return response.data;
+    const cacheKey = cacheService.generateKey('professions');
+    
+    return cacheService.getOrSet(
+        cacheKey,
+        async () => {
+            const response = await api.get(`profiles/professions`, { signal });
+            return response.data;
+        },
+        10 * 60 * 1000 // Cache por 10 minutos
+    );
 }
 
 export const getCategories = async () => {
-    const response = await api.get(`profiles/categories`);
-    return response.data;
+    const cacheKey = cacheService.generateKey('categories');
+    
+    return cacheService.getOrSet(
+        cacheKey,
+        async () => {
+            const response = await api.get(`profiles/categories`);
+            return response.data;
+        },
+        10 * 60 * 1000 // Cache por 10 minutos
+    );
 }
 
 export const getTypeProviders = async (signal) => {
-    const response = await api.get(`profiles/type-providers`, { signal });
-    return response.data;
+    const cacheKey = cacheService.generateKey('type-providers');
+    
+    return cacheService.getOrSet(
+        cacheKey,
+        async () => {
+            const response = await api.get(`profiles/type-providers`, { signal });
+            return response.data;
+        },
+        10 * 60 * 1000 // Cache por 10 minutos
+    );
 }
 
 export const getProviderProfile = async (token) => {
