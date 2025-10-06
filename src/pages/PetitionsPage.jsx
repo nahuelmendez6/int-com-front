@@ -7,8 +7,9 @@ import './PetitionsPage.css';
 
 const PetitionsPage = () => {
   const [petitions, setPetitions] = useState([]);
-  const { profile } = useAuth(); // Changed from user to profile
+  const { profile, customerProfile } = useAuth(); // Changed from user to profile
   const [isModalOpen, setIsModalOpen] = useState(false);
+  console.log(profile)
 
   const handleOpenModal = () => setIsModalOpen(true);
 
@@ -41,7 +42,7 @@ const PetitionsPage = () => {
         </button>
       </div>
 
-      {isModalOpen && <CreatePetitionForm show={isModalOpen} onHide={handleCloseModal} />}
+      {isModalOpen && <CreatePetitionForm show={isModalOpen} onHide={handleCloseModal} profile={profile} customerProfile={customerProfile} />}
       
       <h1 className="text-2xl font-semibold mb-4">Mis Peticiones</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

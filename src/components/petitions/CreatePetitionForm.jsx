@@ -4,11 +4,12 @@ import { getPetitionTypes, createPetition } from '../../services/petitionService
 import { getProfessions, getCategories, getTypeProviders } from '../../services/profileService';
 
 
-const CreatePetitionForm = ({ show, onHide }) => {
+const CreatePetitionForm = ({ show, onHide, profile ,customerProfile}) => {
   const [petitionTypes, setPetitionTypes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [professions, setProfessions] = useState([]);
   const [providerTypes, setProviderTypes] = useState([]);
+  const [attachments, setAttachments] = useState([]);
   const [formData, setFormData] = useState({
     description: '',
     date_since: '',
@@ -56,27 +57,75 @@ const CreatePetitionForm = ({ show, onHide }) => {
     setFormData({ ...formData, categories: selectedCategories });
   };
 
+  const handleFileChange = (e) => {
+    setAttachments([...e.target.files]);
+  };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+    
+  //   const petitionFormData = new FormData();
+
+  //   petitionFormData.append("id_customer", customerProfile.id_customer); // desde el profile del contexto
+  //   petitionFormData.append("id_state", 1);
+
+
+  //   // Append form data
+  //   Object.keys(formData).forEach(key => {
+  //     if (key === 'categories') {
+  //       petitionFormData.append(key, JSON.stringify(formData[key]));
+  //     } else {
+  //       petitionFormData.append(key, formData[key]);
+  //     }
+  //   });
+
+  //   // Append attachments
+  //   attachments.forEach(file => {
+  //     petitionFormData.append('attachments', file);
+  //   });
+
+  //   try {
+  //     await createPetition(petitionFormData);
+  //     onHide();
+  //   } catch (error) {
+  //     console.error('Error creating petition:', error);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const petitionFormData = new FormData();
+
+    // Datos obligatorios
+    petitionFormData.append("id_customer", customerProfile.id_customer); // desde el profile
+    petitionFormData.append("id_state", 1);
+
+    // Append el resto de los campos del form
+    Object.keys(formData).forEach(key => {
+      if (key !== 'categories') {
+        petitionFormData.append(key, formData[key]);
+      }
+    });
+
+    // Append cada categoría individualmente
+    formData.categories.forEach(cat => {
+      petitionFormData.append('categories', cat.id_category); // envía solo el número
+    });
+
+    // Append adjuntos
+    attachments.forEach(file => {
+      petitionFormData.append('attachments', file);
+    });
+
     try {
-      // Hardcoded values for now, as per the example
-      const petitionData = {
-        ...formData,
-        id_customer: 9,
-        id_state: 1,
-        attachments: [
-          { url: 'http://miapp.com/adjunto1.png', type: 'image', id_user_create: 5 }
-        ],
-        materials: [
-          { id_article: 3, quantity: 2, unit_price: 150.0, id_user_create: 5 }
-        ]
-      };
-      await createPetition(petitionData);
+      await createPetition(petitionFormData);
       onHide();
     } catch (error) {
       console.error('Error creating petition:', error);
     }
   };
+
 
   return (
     <Modal show={show} onHide={onHide} size="lg">
@@ -150,6 +199,10 @@ const CreatePetitionForm = ({ show, onHide }) => {
                 </Col>
               ))}
             </Row>
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Adjuntos</Form.Label>
+            <Form.Control type="file" multiple onChange={handleFileChange} />
           </Form.Group>
         </Form>
       </Modal.Body>

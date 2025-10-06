@@ -5,7 +5,7 @@ export const createPetition = async (petitionData) => {
     const response = await api.post('/petitions/', petitionData);
     return response.data;
   } catch (error) {
-    console.error('Error creating petition:', error);
+    console.error("Error creating petition:", error.response?.data); 
     throw error;
   }
 };
